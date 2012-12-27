@@ -1,0 +1,14 @@
+// whitespace-nazi
+{   "white": true
+,   "trailing": true
+// Strict variable naming
+,   "unused": true
+,   "undef": true
+// Allow some globals
+,   "jquery": true
+,   "browser": true
+,   "globals":
+    { "d3": false
+    , "science": false
+    }
+}
