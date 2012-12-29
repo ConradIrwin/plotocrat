@@ -1,14 +1,18 @@
 // whitespace-nazi
-{   "white": true
-,   "trailing": true
+{
+  "white": true,
+  "trailing": true,
 // Strict variable naming
-,   "unused": true
-,   "undef": true
+  "unused": true,
+  "undef": true,
 // Allow some globals
-,   "jquery": true
-,   "browser": true
-,   "globals":
-    { "d3": false
-    , "science": false
-    }
+  "jquery": true,
+  "browser": true,
+// Allow use of Array.map in a loop
+  "loopfunc": true,
+// Extra globals!
+  "globals": {
+    "d3": false,
+    "science": false
+  }
 }

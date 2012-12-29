@@ -12,6 +12,38 @@ path.pdf {
     fill: rgba(140, 220, 194, 0.2);
 }
 
+circle.mode, circle.expectation {
+    stroke: #57DCB1;
+    fill: none;
+}
+circle.mode:hover, circle.expectation:hover {
+    fill: #57DCB1;
+}
+
+circle.percentile {
+    stroke: #DE1629;
+    fill: none;
+}
+
+circle.percentile:hover {
+    fill: #DE1629;
+}
+
+.xdivisions.strong, .ydivisions.strong {
+    stroke: rgba(154, 112, 61, 0.3);
+}
+
+.xdivisions.weak, .ydivisions.weak {
+    stroke: rgba(154, 112, 61, 0.1);
+}
+
+text {
+    font-size: 12px;
+    font-family: sans-serif;
+    text-anchor: middle;
+    fill: #282520;
+}
+
 line {
     stroke: black;
 }
