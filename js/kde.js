@@ -32,7 +32,7 @@ science.stats.distribution.kde = function () {
                 calculated = underlying(d3.range(first, last, (last - first) / resolution));
 
             // Ensure KDE function hits the axis.
-            calculated.shift([first, 0]);
+            calculated.unshift([first, 0]);
             calculated.push([last, 0]);
 
             cache.quantized = calculated;
