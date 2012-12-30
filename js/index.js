@@ -3,10 +3,19 @@
         var height = 400, width = 600;
 
         function cdf(data) {
-            var axisTicks = science.axis.linearTicks(data);
-            var x = d3.scale.linear().domain([axisTicks[0], axisTicks[axisTicks.length - 1]]).range([40, width]);
+            var kde = science.stats.distribution.kde().sample(data).resolution(200);
+
+            var axisTicks, x;
+            if (kde.feelsLogarithmic()) {
+                kde.log(true);
+                axisTicks = science.axis.logTicks(data);
+                x = d3.scale.log();
+            } else {
+                axisTicks = science.axis.linearTicks(data);
+                x = d3.scale.linear();
+            }
+            x.domain([axisTicks[0], axisTicks[axisTicks.length - 1]]).range([40, width]);
             var y = d3.scale.linear().domain([1, 0]).range([40, height]);
-            var kde = science.stats.distribution.kde().sample(data).log(false).resolution(200);
             var yk = d3.scale.linear().domain([kde.max(), 0]).range([40, height]);
 
             var viz = d3.select('#cdf').style('width', width).style('height', height)
