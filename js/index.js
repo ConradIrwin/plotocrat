@@ -3,10 +3,10 @@
         var height = 400, width = 600;
 
         function cdf(data) {
-            var axisTicks = science.axis.logTicks(data);
-            var x = d3.scale.log().domain([axisTicks[0], axisTicks[axisTicks.length - 1]]).range([40, width]);
+            var axisTicks = science.axis.linearTicks(data);
+            var x = d3.scale.linear().domain([axisTicks[0], axisTicks[axisTicks.length - 1]]).range([40, width]);
             var y = d3.scale.linear().domain([1, 0]).range([40, height]);
-            var kde = science.stats.distribution.kde().sample(data).log(true).resolution(200);
+            var kde = science.stats.distribution.kde().sample(data).log(false).resolution(200);
             var yk = d3.scale.linear().domain([kde.max(), 0]).range([40, height]);
 
             var viz = d3.select('#cdf').style('width', width).style('height', height)
@@ -24,8 +24,8 @@
                 .attr('y1', y).attr('y2', y);
 
             viz.selectAll('line.xdivisions').data(axisTicks).enter().append('svg:line')
-                .attr('class', function (d) {
-                    if (d.toString().match(/^10*$/)) {
+                .attr('class', function (d, i) {
+                    if (i === 0 || d.toString().match(/^10*$/) || i === axisTicks.length - 1) {
                         return 'xdivisions strong';
                     } else {
                         return 'xdivisions weak';
@@ -36,8 +36,8 @@
 
             viz.selectAll('text.xticklabels').data(axisTicks).enter().append('svg:text')
                 .attr('class', 'xticklabels')
-                .text(function (d) {
-                    if (d.toString().match(/^10*$/)) {
+                .text(function (d, i) {
+                    if (i === 0 || d.toString().match(/^10*$/) || i === axisTicks.length - 1) {
                         return d;
                     } else {
                         return "";
@@ -90,7 +90,7 @@
                 .attr('class', 'expectation')
                 .attr('r', 4)
                 .attr('cx', x)
-                .attr('cy', function (d) { return yk(kde(d)); });
+                .attr('cy', function () { return y(0.25); });
 
             viz.selectAll('circle.percentile').data(kde.qf()).enter().append('svg:circle')
                 .attr('class', 'percentile')
@@ -135,9 +135,9 @@
 
         window.emails = window.emails.filter(function (x) { return x !== 0; });
 
-        window.normal = window.normal.filter(function (x) { return x !== 0; }).sort(d3.ascending);
+        window.normal = window.normal.map(Number).filter(function (x) { return x !== 0; }).sort(d3.ascending);
 
-        cdf(window.emails.map(Number));
-       // cdf(window.files.map(function (x) { return x / 1024; }));
+        cdf(window.normal.map(Number));
+        cdf(window.files.map(function (x) { return x / 1024; }));
     });
 }).call(this);
