@@ -148,7 +148,7 @@
 
         window.normal = window.normal.map(Number).filter(function (x) { return x !== 0; }).sort(d3.ascending);
 
-        cdf(window.normal.map(Number));
-        cdf(window.files.map(function (x) { return x / 1024; }));
+        window.faithful = window.faithful.sort(d3.ascending);
+        cdf(window.faithful);
     });
 }).call(this);
