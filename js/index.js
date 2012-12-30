@@ -151,6 +151,6 @@
         window.faithful = window.faithful.sort(d3.ascending);
 //        cdf(window.faithful);
         window.foo = [1, 2];
-        cdf(window.files);
+        cdf(window.emails);
     });
 }).call(this);

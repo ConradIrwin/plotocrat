@@ -253,7 +253,7 @@ science.stats.distribution.kde = function () {
             ninetieth = kde.quantile(0.9);
 
         // if 50% of the data takes up <10% of the graph, it's logarithmic
-        if ((fiftieth - tenth) / (ninetieth - tenth) < 0.1) {
+        if ((fiftieth - tenth) / (ninetieth - tenth) < 0.2) {
             return true;
         } else {
             return false;
