@@ -5,16 +5,15 @@
         function cdf(data) {
             var kde = science.stats.distribution.kde().sample(data).resolution(200);
 
-            var axisTicks, x;
+            var x;
             if (kde.feelsLogarithmic()) {
                 kde.log(true);
-                axisTicks = science.axis.logTicks(data);
                 x = d3.scale.log();
             } else {
-                axisTicks = science.axis.linearTicks(data);
                 x = d3.scale.linear();
             }
-            x.clamp(true).domain([axisTicks[0], axisTicks[axisTicks.length - 1]]).range([40, width]);
+            x.clamp(true).domain([data[0], data[data.length - 1]]).range([40, width]).nice();
+            var axisTicks = x.ticks(10);
             var y = d3.scale.linear().domain([1, 0]).range([40, height]);
             var yk = d3.scale.linear().domain([kde.max(), 0]).range([40, height]);
 
@@ -152,5 +151,9 @@
 //        cdf(window.faithful);
         window.foo = [1, 2];
         cdf(window.emails);
+        cdf(window.normal);
+        cdf(window.files);
+        cdf(window.faithful);
+        cdf(window.foo);
     });
 }).call(this);
