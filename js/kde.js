@@ -29,9 +29,23 @@ science.stats.distribution.kde = function () {
         if (!cache.quantized) {
             var first = logSample()[0],
                 last  = logSample()[logSample().length - 1],
-                calculated = underlying(d3.range(first, last, (last - first) / resolution));
+                step  = (last - first) / resolution,
+                calculated = underlying(d3.range(first, last, step));
 
             // Ensure KDE function hits the axis.
+            // (this is necessary to calculate expectation correctly)
+
+            while (calculated[0][1] > 1e-3) {
+                first -= step;
+                calculated.unshift(underlying([first])[0]);
+            }
+
+            while (calculated[calculated.length - 1][1] > 1e-3) {
+                last += step;
+                calculated.push(underlying([last])[0]);
+            }
+
+
             calculated.unshift([first, 0]);
             calculated.push([last, 0]);
 

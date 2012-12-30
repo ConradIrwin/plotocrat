@@ -14,7 +14,7 @@
                 axisTicks = science.axis.linearTicks(data);
                 x = d3.scale.linear();
             }
-            x.domain([axisTicks[0], axisTicks[axisTicks.length - 1]]).range([40, width]);
+            x.clamp(true).domain([axisTicks[0], axisTicks[axisTicks.length - 1]]).range([40, width]);
             var y = d3.scale.linear().domain([1, 0]).range([40, height]);
             var yk = d3.scale.linear().domain([kde.max(), 0]).range([40, height]);
 
@@ -151,6 +151,6 @@
         window.faithful = window.faithful.sort(d3.ascending);
 //        cdf(window.faithful);
         window.foo = [1, 2];
-        cdf(window.foo);
+        cdf(window.files);
     });
 }).call(this);
