@@ -124,21 +124,23 @@
                 .attr('cx', 0)
                 .attr('cy', 0);
 
-            $('svg').mousemove(function (e) {
+            var $svg = $(viz[0][0]).closest('svg');
+
+            $svg.mousemove(function (e) {
                 var pos = x.invert(e.clientX - 10);
                 if (pos < axisTicks[0]) {
                     pos = axisTicks[0];
                 } else if (pos > axisTicks[axisTicks.length - 1]) {
                     pos = axisTicks[axisTicks.length - 1];
                 }
-                $('line.fugi').attr('x1', x(pos)).attr('x2', x(pos));
-                $('.fugired, .fugiblue').attr('cx', x(pos));
-                $('.fugiblue').attr('cy', yk(kde(pos)));
-                $('.fugired').attr('cy', y(kde.inverse_quantile(pos)));
+                $svg.find('line.fugi').attr('x1', x(pos)).attr('x2', x(pos));
+                $svg.find('.fugired, .fugiblue').attr('cx', x(pos));
+                $svg.find('.fugiblue').attr('cy', yk(kde(pos)));
+                $svg.find('.fugired').attr('cy', y(kde.inverse_quantile(pos)));
             }).mouseover(function () {
-                $('line.fugi').show();
+                $svg.find('line.fugi').show();
             }).mouseout(function () {
-                $('line.fugi').hide();
+                $svg.find('line.fugi').hide();
             });
         }
 
