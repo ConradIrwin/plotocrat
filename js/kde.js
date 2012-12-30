@@ -180,14 +180,33 @@ science.stats.distribution.kde = function () {
         return kde(kde.mode());
     };
 
-    kde.quantile = function (x) {
-        return science.stats.quantiles(sample, [x])[0];
+    kde.quantile = function (q) {
+
+        var index = q * (sample.length - 1),
+            lo = Math.floor(index),
+            hi = Math.ceil(index);
+
+        if (lo === hi || hi >= sample.length) {
+            return sample[lo];
+        } else {
+            return sample[lo] + (index - lo) * (sample[hi] - sample[lo]) / (hi - lo);
+        }
     };
 
-    kde.inverse_quantile = function (x) {
-        return science.bisect(sample, function (d) {
-            return d < x;
-        }) / sample.length;
+    kde.inverseQuantile = function (x) {
+        var // sample[lo] < x <= sample[hi]
+            hi = science.bisect(sample, function (d) {
+                return d < x;
+            }),
+            lo = hi - 1;
+
+        if (hi === sample.length) {
+            return 1;
+        } else if (hi === 0) {
+            return 0;
+        } else {
+            return (lo + (hi - lo) * (x - sample[lo]) / (sample[hi] - sample[lo])) / (sample.length - 1);
+        }
     };
 
     // The probability density function as an array of [x, y] pairs.
@@ -207,15 +226,9 @@ science.stats.distribution.kde = function () {
     // The cumulative probability function as an array of [x, y] pairs
     kde.cdf = function () {
         if (!cache.cdf) {
-            var cumulative = [], i = 0;
-            while (i < sample.length) {
-                while (sample[i + 1] === sample[i]) {
-                    i += 1;
-                }
-                cumulative.push([sample[i], (i + 1) / sample.length]);
-                i += 1;
-            }
-            cache.cdf = cumulative;
+            cache.cdf = sample.map(function (x, i) {
+                return [x, i / (sample.length - 1)];
+            });
         }
         return cache.cdf;
     };

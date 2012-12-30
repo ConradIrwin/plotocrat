@@ -136,7 +136,7 @@
                 $svg.find('line.fugi').attr('x1', x(pos)).attr('x2', x(pos));
                 $svg.find('.fugired, .fugiblue').attr('cx', x(pos));
                 $svg.find('.fugiblue').attr('cy', yk(kde(pos)));
-                $svg.find('.fugired').attr('cy', y(kde.inverse_quantile(pos)));
+                $svg.find('.fugired').attr('cy', y(kde.inverseQuantile(pos)));
             }).mouseover(function () {
                 $svg.find('line.fugi').show();
             }).mouseout(function () {
@@ -149,6 +149,8 @@
         window.normal = window.normal.map(Number).filter(function (x) { return x !== 0; }).sort(d3.ascending);
 
         window.faithful = window.faithful.sort(d3.ascending);
-        cdf(window.faithful);
+//        cdf(window.faithful);
+        window.foo = [1, 2];
+        cdf(window.foo);
     });
 }).call(this);
