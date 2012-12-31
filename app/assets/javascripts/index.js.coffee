@@ -12,7 +12,7 @@
 
       kde.scale x.copy()
       x.clamp(true).domain([data[0], data[data.length - 1]]).range([40, width]).nice()
-      axisTicks = x.ticks(10)
+      axisTicks = x.ticks(5)
 
       y = d3.scale.linear().domain([1, 0]).range([40, height])
       yk = d3.scale.linear().domain([kde.max(), 0]).range([40, height])
@@ -60,10 +60,12 @@
       viz.selectAll("text.xticklabels").data(axisTicks).enter()
         .append("svg:text").attr("class", "xticklabels")
         .text((d, i) ->
-          if i is 0 or d.toString().match(/^10*$/) or i is axisTicks.length - 1
-            d
-          else
-            ""
+          raw = x.tickFormat(5)(d)
+
+          raw.replace(/^1e\+([0-6])$/, (m, i) ->
+            Math.pow(10, i)
+          )
+
         ).attr
           x: x
           y: height + 15
