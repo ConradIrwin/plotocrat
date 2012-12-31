@@ -4,37 +4,25 @@ science.stats.distribution.kde = function () {
     var underlying = science.stats.kde(),
         sample = [],
         cache = {},
-        log = false,
+        scale = d3.scale.identity(),
         resolution = 100;
 
-    function delog(x) {
-        return log ? Math.exp(x) : x;
-    }
-
-    function enlog(x) {
-        return log ? Math.log(x) : x;
-    }
-
-    function logSample() {
-        if (!cache.log) {
-            cache.log = log ? sample.map(function (x) {
-                return Math.log(x);
-            }) : sample;
+    function scaledSample() {
+        if (!cache.scaledSample) {
+            cache.scaledSample = sample.map(scale);
         }
-        return cache.log;
+        return cache.scaledSample;
     }
 
-    // Return the KDE as an array of [x, probability-density] pairs.
-    function quantized() {
+    function scaledPdf() {
         if (!cache.quantized) {
-            var first = logSample()[0],
-                last  = logSample()[logSample().length - 1],
+            var first = scaledSample()[0],
+                last  = scaledSample()[scaledSample().length - 1],
                 step  = (last - first) / resolution,
                 calculated = underlying(d3.range(first, last, step));
 
-            // Ensure KDE function hits the axis.
+            // Ensure PDF hits the axis.
             // (this is necessary to calculate expectation correctly)
-
             while (calculated[0][1] > 1e-3) {
                 first -= step;
                 calculated.unshift(underlying([first])[0]);
@@ -54,16 +42,8 @@ science.stats.distribution.kde = function () {
         return cache.quantized;
     }
 
-    function delogKde() {
-        if (log) {
-            return quantized().map(function (d) { return [Math.exp(d[0]), d[1]]; });
-        } else {
-            return quantized();
-        }
-    }
-
     function kde(x) {
-        return underlying([enlog(x)])[0][1];
+        return underlying([scale(x)])[0][1];
     }
 
     kde.bandwidth = function (x) {
@@ -78,7 +58,7 @@ science.stats.distribution.kde = function () {
         return kde;
     };
 
-    /* The samples from which to derive the KDE.
+    /* The samples from which to derive the PDF
      *
      * An array of numbers.
      */
@@ -87,27 +67,25 @@ science.stats.distribution.kde = function () {
 
         sample = x;
         cache = {};
-        underlying.sample(logSample());
+        underlying.sample(scaledSample());
         return kde;
     };
 
-    /* Whether to perform KDE on the log of the samples instead of the samples themselves
+    /* Set the scale over which to perform kernel density estimation.
      *
-     * The main reason to set this is that the symmetrical kernel used by default will
-     * give very bizarre results if the data distribution is not locally symmetrical,
-     * however it also interacts with the resolution parameter so that the resolution will
-     * appear uniform when plotted on a log-graph.
-     *
-     * If you set this you should plot the KDE function on a log-graph (and vice-versa).
+     * Because the kernel desnsity is a visual measure of data, you should set this to
+     * the same scale as you intend to plot the graph. (In particular if you don't set
+     * a log scale when you're going to plot a log graph, your pdf will end up very
+     * asymmetric).
      *
      * [1] http://www.ebyte.it/library/docs/math04a/PdfChangeOfCoordinates04.html
      */
-    kde.log = function (x) {
-        if (!arguments.length) { return log; }
+    kde.scale = function (x) {
+        if (!arguments.length) { return scale; }
 
-        log = x;
+        scale = x;
         cache = {};
-        underlying.sample(logSample());
+        underlying.sample(scaledSample());
         return kde;
     };
 
@@ -140,17 +118,16 @@ science.stats.distribution.kde = function () {
      */
     kde.mode = function () {
         var max = -Infinity,
-            kde = quantized(),
             ret;
 
-        kde.forEach(function (d) {
+        scaledPdf().forEach(function (d) {
             if (d[1] > max) {
                 max = d[1];
                 ret = d[0];
             }
         });
 
-        return delog(ret);
+        return scale.invert(ret);
     };
 
     /* The 'expectation' of the kde.
@@ -166,19 +143,19 @@ science.stats.distribution.kde = function () {
      */
     kde.expectation = function () {
         var accum = 0,
-            kde = quantized(),
+            pdf = scaledPdf(),
             a, b;
 
         for (var i = 0; i < kde.length - 1; i++) {
-            a = kde[i];
-            b = kde[i + 1];
+            a = pdf[i];
+            b = pdf[i + 1];
 
             // integrate(x * f(x))
             // => sum the area of all quadrilaterals of size d
             accum += (b[0] - a[0]) * (a[0] * a[1] + b[0] * b[1]) / 2;
         }
 
-        return delog(accum);
+        return scale.invert(accum);
     };
 
     /* The 'median' of the data.
@@ -194,17 +171,9 @@ science.stats.distribution.kde = function () {
         return kde(kde.mode());
     };
 
+    // Get a single quantile (0.5 == median)
     kde.quantile = function (q) {
-
-        var index = q * (sample.length - 1),
-            lo = Math.floor(index),
-            hi = Math.ceil(index);
-
-        if (lo === hi || hi >= sample.length) {
-            return sample[lo];
-        } else {
-            return sample[lo] + (index - lo) * (sample[hi] - sample[lo]) / (hi - lo);
-        }
+        return science.stats.quantiles(sample, [q])[0];
     };
 
     kde.inverseQuantile = function (x) {
@@ -225,7 +194,7 @@ science.stats.distribution.kde = function () {
 
     // The probability density function as an array of [x, y] pairs.
     kde.pdf = function () {
-        return delogKde();
+        return scaledPdf().map(function (d) { return [scale.invert(d[0]), d[1]]; });
     };
 
     // Some quartiles as an array of [x, y] pairs.

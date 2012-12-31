@@ -7,13 +7,13 @@
 
             var x;
             if (kde.feelsLogarithmic()) {
-                kde.log(true);
                 x = d3.scale.log();
             } else {
                 x = d3.scale.linear();
             }
             x.clamp(true).domain([data[0], data[data.length - 1]]).range([40, width]).nice();
-            var axisTicks = x.ticks(10);
+            kde.scale(x.copy());
+            var axisTicks = x.ticks(5);
             var y = d3.scale.linear().domain([1, 0]).range([40, height]);
             var yk = d3.scale.linear().domain([kde.max(), 0]).range([40, height]);
 
@@ -44,12 +44,11 @@
 
             viz.selectAll('text.xticklabels').data(axisTicks).enter().append('svg:text')
                 .attr('class', 'xticklabels')
-                .text(function (d, i) {
-                    if (i === 0 || d.toString().match(/^10*$/) || i === axisTicks.length - 1) {
-                        return d;
-                    } else {
-                        return "";
-                    }
+                .text(function (n) {
+                    var raw = x.tickFormat(5)(n);
+                    return raw.replace(/^1e\+([0123456])$/, function (m, i) {
+                        return Math.pow(10, i);
+                    });
                 })
                 .attr('x', x)
                 .attr('y', height + 15);
