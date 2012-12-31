@@ -46,12 +46,12 @@ science.stats.distribution.kde = ->
   log = false
   resolution = 100
   kde.bandwidth = (x) ->
-    return underlying.bandwidth()  unless arguments_.length
+    return underlying.bandwidth()  unless arguments.length
     underlying.bandwidth x
     kde
 
   kde.kernel = (x) ->
-    return underlying.kernel()  unless arguments_.length
+    return underlying.kernel()  unless arguments.length
     underlying.kernel x
     kde
 
@@ -61,7 +61,7 @@ science.stats.distribution.kde = ->
   #     * An array of numbers.
   #     
   kde.sample = (x) ->
-    return sample  unless arguments_.length
+    return sample  unless arguments.length
     sample = x
     cache = {}
     underlying.sample logSample()
@@ -80,7 +80,7 @@ science.stats.distribution.kde = ->
   #     * [1] http://www.ebyte.it/library/docs/math04a/PdfChangeOfCoordinates04.html
   #     
   kde.log = (x) ->
-    return log  unless arguments_.length
+    return log  unless arguments.length
     log = x
     cache = {}
     underlying.sample logSample()
@@ -96,7 +96,7 @@ science.stats.distribution.kde = ->
   #     * pixels in the graph so that the curve looks smooth.
   #     
   kde.resolution = (x) ->
-    return resolution  unless arguments_.length
+    return resolution  unless arguments.length
     resolution = x
     cache = {}
     kde
