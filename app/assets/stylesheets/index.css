@@ -1,0 +1,85 @@
+path {
+    fill: none;
+    stroke: red;
+}
+
+path.cdf {
+    stroke: #DE1629;
+}
+
+path.pdf {
+    stroke: #57DCB1;
+    fill: rgba(140, 220, 194, 0.2);
+}
+
+circle.mode, circle.expectation {
+    stroke: #57DCB1;
+    fill: none;
+}
+circle.mode:hover, circle.expectation:hover {
+    fill: #57DCB1;
+}
+
+circle.percentile {
+    stroke: #DE1629;
+    fill: none;
+}
+
+circle.percentile:hover {
+    fill: #DE1629;
+}
+
+.xdivisions.strong, .ydivisions.strong {
+    stroke: rgba(154, 112, 61, 0.3);
+}
+
+.xdivisions.weak, .ydivisions.weak {
+    stroke: rgba(154, 112, 61, 0.1);
+}
+
+.fugi, .fugired, .fugiblue {
+    stroke: rgba(0, 0, 0, 0.5);
+}
+
+.fugired, .fugiblue{
+    fill: none;
+}
+
+text {
+    font-size: 12px;
+    font-family: sans-serif;
+    text-anchor: middle;
+    fill: #282520;
+}
+
+line {
+    stroke: black;
+}
+
+text {
+    padding-top: 6px;
+
+}
+
+/* Palette color codes */
+/* Feel free to copy&paste color codes to your application */
+
+.primary-1 { background-color: #0F996C }
+.primary-2 { background-color: #296652 }
+.primary-3 { background-color: #035238 }
+.primary-4 { background-color: #57DCB1 }
+.primary-5 { background-color: #8CDCC2 }
+
+.secondary-a-1 { background-color: #E68917 }
+.secondary-a-2 { background-color: #9A703D }
+.secondary-a-3 { background-color: #7B4604 }
+.secondary-a-4 { background-color: #F6B462 }
+.secondary-a-5 { background-color: #F6CE9C }
+
+.secondary-b-1 { background-color: #DE1629 }
+.secondary-b-2 { background-color: #953B44 }
+.secondary-b-3 { background-color: #77040F }
+.secondary-b-4 { background-color: #F4616F }
+.secondary-b-5 { background-color: #F49BA3 }
+
+/* end */
