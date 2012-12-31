@@ -10,7 +10,7 @@ science.stats.distribution.kde = ->
         Math.log x
       ) else sample)
     cache.log
-  
+
   # Return the KDE as an array of [x, probability-density] pairs.
   quantized = ->
     unless cache.quantized
@@ -18,7 +18,7 @@ science.stats.distribution.kde = ->
       last = logSample()[logSample().length - 1]
       step = (last - first) / resolution
       calculated = underlying(d3.range(first, last, step))
-      
+
       # Ensure KDE function hits the axis.
       # (this is necessary to calculate expectation correctly)
       while calculated[0][1] > 1e-3
@@ -55,11 +55,11 @@ science.stats.distribution.kde = ->
     underlying.kernel x
     kde
 
-  
+
   # The samples from which to derive the KDE.
   #     *
   #     * An array of numbers.
-  #     
+  #
   kde.sample = (x) ->
     return sample  unless arguments.length
     sample = x
@@ -67,7 +67,7 @@ science.stats.distribution.kde = ->
     underlying.sample logSample()
     kde
 
-  
+
   # Whether to perform KDE on the log of the samples instead of the samples themselves
   #     *
   #     * The main reason to set this is that the symmetrical kernel used by default will
@@ -78,7 +78,7 @@ science.stats.distribution.kde = ->
   #     * If you set this you should plot the KDE function on a log-graph (and vice-versa).
   #     *
   #     * [1] http://www.ebyte.it/library/docs/math04a/PdfChangeOfCoordinates04.html
-  #     
+  #
   kde.log = (x) ->
     return log  unless arguments.length
     log = x
@@ -86,7 +86,7 @@ science.stats.distribution.kde = ->
     underlying.sample logSample()
     kde
 
-  
+
   # How many samples will be used.
   #     *
   #     * This effects the number of points returned by kde() with no arguments,
@@ -94,14 +94,14 @@ science.stats.distribution.kde = ->
   #     *
   #     * You probably want to set this to the same order of magnitude as the number of
   #     * pixels in the graph so that the curve looks smooth.
-  #     
+  #
   kde.resolution = (x) ->
     return resolution  unless arguments.length
     resolution = x
     cache = {}
     kde
 
-  
+
   # The 'mode' of the kde.
   #     *
   #     * This is the highest point of the probability density function; intuitively the value
@@ -112,19 +112,19 @@ science.stats.distribution.kde = ->
   #     * occuring more than once is negligable).
   #     *
   #     * http://en.wikipedia.org/wiki/Mode_(statistics)
-  #     
+  #
   kde.mode = ->
     max = -Infinity
-    kde = quantized()
+    pdf = quantized()
     ret = undefined
-    kde.forEach (d) ->
+    pdf.forEach (d) ->
       if d[1] > max
         max = d[1]
         ret = d[0]
 
     delog ret
 
-  
+
   # The 'expectation' of the kde.
   #     *
   #     * This is the first moment of the data; and corresponds to most people's intuitive
@@ -135,30 +135,30 @@ science.stats.distribution.kde = ->
   #     * when the data is very skewed).
   #     *
   #     * http://en.wikipedia.org/wiki/Expected_value
-  #     
+  #
   kde.expectation = ->
     accum = 0
-    kde = quantized()
+    pdf = quantized()
     a = undefined
     b = undefined
     i = 0
 
     while i < kde.length - 1
-      a = kde[i]
-      b = kde[i + 1]
-      
+      a = pdf[i]
+      b = pdf[i + 1]
+
       # integrate(x * f(x))
       # => sum the area of all quadrilaterals of size d
       accum += (b[0] - a[0]) * (a[0] * a[1] + b[0] * b[1]) / 2
       i++
     delog accum
 
-  
+
   # The 'median' of the data.
   #     *
   #     * Half the data is smaller than the median, the other half is bigger.
   #     * (e.g. half of all files are smaller than 16kb)
-  #     
+  #
   kde.median = ->
     kde.percentile 0.5
 
@@ -187,12 +187,12 @@ science.stats.distribution.kde = ->
     else
       (lo + (hi - lo) * (x - sample[lo]) / (sample[hi] - sample[lo])) / (sample.length - 1)
 
-  
+
   # The probability density function as an array of [x, y] pairs.
   kde.pdf = ->
     delogKde()
 
-  
+
   # Some quartiles as an array of [x, y] pairs.
   kde.qf = ->
     ys = [0, 0.01, 0.1, 0.25, 0.5, 0.75, 0.9, 0.99, 1]
@@ -200,7 +200,7 @@ science.stats.distribution.kde = ->
       [kde.quantile(y), y]
 
 
-  
+
   # The cumulative probability function as an array of [x, y] pairs
   kde.cdf = ->
     unless cache.cdf
@@ -213,7 +213,7 @@ science.stats.distribution.kde = ->
     tenth = kde.quantile(0.1)
     fiftieth = kde.quantile(0.5)
     ninetieth = kde.quantile(0.9)
-    
+
     # if 50% of the data takes up <10% of the graph, it's logarithmic
     if (fiftieth - tenth) / (ninetieth - tenth) < 0.2
       true
