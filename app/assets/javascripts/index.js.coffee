@@ -6,11 +6,11 @@
       kde = science.stats.distribution.kde().sample(data).resolution(200)
       x = undefined
       if kde.feelsLogarithmic()
-        kde.log true
         x = d3.scale.log()
       else
         x = d3.scale.linear()
 
+      kde.scale x.copy()
       x.clamp(true).domain([data[0], data[data.length - 1]]).range([40, width]).nice()
       axisTicks = x.ticks(10)
 
