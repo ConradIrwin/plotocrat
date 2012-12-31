@@ -28,118 +28,130 @@
 
       viz.selectAll("line.ydivisions.strong").data([0, 1]).enter()
         .append("svg:line")
-        .attr("class", "ydivisions strong")
-        .attr("x1", x(axisTicks[0]))
-        .attr("x2", x(axisTicks[axisTicks.length - 1]))
-        .attr("y1", y)
-        .attr("y2", y)
+        .attr
+          class: "ydivisions strong"
+          x1: x(axisTicks[0])
+          x2: x(axisTicks[axisTicks.length - 1])
+          y1: y
+          y2: y
 
       viz.selectAll("line.ydivisions.weak").data(d3.range(0, 1, 0.25)).enter()
         .append("svg:line")
-        .attr("class", "ydivisions weak")
-        .attr("x1", x(axisTicks[0]))
-        .attr("x2", x(axisTicks[axisTicks.length - 1]))
-        .attr("y1", y)
-        .attr("y2", y)
+        .attr
+          class: "ydivisions weak"
+          x1: x(axisTicks[0])
+          x2: x(axisTicks[axisTicks.length - 1])
+          y1: y
+          y2: y
 
       viz.selectAll("line.xdivisions").data(axisTicks).enter()
         .append("svg:line")
-        .attr("class", (d, i) ->
-          if i is 0 or d.toString().match(/^10*$/) or i is axisTicks.length - 1
-            "xdivisions strong"
-          else
-            "xdivisions weak"
-        ).attr("y1", y(0))
-        .attr("y2", y(1))
-        .attr("x1", x)
-        .attr "x2", x
+        .attr
+          class: (d, i) ->
+            if i is 0 or d.toString().match(/^10*$/) or i is axisTicks.length - 1
+              "xdivisions strong"
+            else
+              "xdivisions weak"
+          y1: y(0)
+          y2: y(1)
+          x1: x
+          x2: x
 
       viz.selectAll("text.xticklabels").data(axisTicks).enter()
-        .append("svg:text")
-        .attr("class", "xticklabels")
+        .append("svg:text").attr("class", "xticklabels")
         .text((d, i) ->
           if i is 0 or d.toString().match(/^10*$/) or i is axisTicks.length - 1
             d
           else
             ""
-        ).attr("x", x)
-        .attr("y", height + 15)
+        ).attr
+          x: x
+          y: height + 15
 
       viz.selectAll("text.xtitle").data([0]).enter()
-        .append("svg:text")
-        .attr("class", "xtitle")
+        .append("svg:text").attr("class", "xtitle")
         .text("Email size (kb)")
-        .attr("x", 40 + width / 2)
-        .attr("y", height + 30)
+        .attr
+          x: 40 + width / 2
+          y: height + 30
 
       viz.selectAll("text.ytitle").data([0]).enter()
-        .append("svg:text")
-        .attr("class", "ytitle")
+        .append("svg:text").attr("class", "ytitle")
         .text("Probability")
-        .attr("transform", "rotate(270 30 " + (40 + height / 2) + ")")
-        .attr("x", 20)
-        .attr("y", 40 + height / 2)
+        .attr
+          transform: "rotate(270 30 " + (40 + height / 2) + ")"
+          x: 20
+          y: 40 + height / 2
 
       viz.selectAll("text.y2title").data([0]).enter()
         .append("svg:text")
         .attr("class", "y2title")
         .text("Count so far")
-        .attr("transform", "rotate(90 " + (width + 10) + " " + (40 + height / 2) + ")")
-        .attr("x", width + 10)
-        .attr("y", 40 + height / 2)
+        .attr
+          transform: "rotate(90 " + (width + 10) + " " + (40 + height / 2) + ")"
+          x: width + 10
+          y: 40 + height / 2
 
       viz.selectAll("path.pdf").data([kde.pdf()]).enter()
         .append("svg:path")
-        .attr("class", "pdf")
-        .attr("d", d3.svg.line().x((d) -> x d[0]).y((d) -> yk d[1]))
+        .attr
+          class: "pdf"
+          d: d3.svg.line().x((d) -> x d[0]).y((d) -> yk d[1])
 
       viz.selectAll("path.cdf").data([kde.cdf()]).enter()
         .append("svg:path")
-        .attr("class", "cdf")
-        .attr("d", d3.svg.line().x((d) -> x d[0]).y((d) -> y d[1]))
+        .attr
+          class: "cdf"
+          d: d3.svg.line().x((d) -> x d[0]).y((d) -> y d[1])
 
       viz.selectAll("circle.mode").data([kde.mode()]).enter()
         .append("svg:circle")
-        .attr("class", "mode")
-        .attr("r", 4)
-        .attr("cx", x)
-        .attr("cy", (d) -> yk kde(d))
+        .attr
+          class: "mode"
+          r: 4
+          cx: x
+          cy: (d) -> yk kde(d)
 
       viz.selectAll("circle.expectation").data([kde.expectation()]).enter()
         .append("svg:circle")
-        .attr("class", "expectation")
-        .attr("r", 4)
-        .attr("cx", x)
-        .attr("cy", -> y 0.25)
+        .attr
+          class: "expectation"
+          r: 4
+          cx: x
+          cy: -> y 0.25
 
       viz.selectAll("circle.percentile").data(kde.qf()).enter()
         .append("svg:circle")
-        .attr("class", "percentile")
-        .attr("r", 4)
-        .attr("cx", (d) -> x d[0])
-        .attr("cy", (d) -> y d[1])
+        .attr
+          class: "percentile"
+          r: 4
+          cx: (d) -> x d[0]
+          cy: (d) -> y d[1]
 
       viz.selectAll("line.fugi").data([0]).enter()
         .append("svg:line")
-        .attr("class", "fugi")
-        .attr("y1", y(0))
-        .attr("y2", y(1))
-        .attr("x1", x)
-        .attr("x2", x)
+        .attr
+          class: "fugi"
+          y1: y(0)
+          y2: y(1)
+          x1: x
+          x2: x
 
       viz.selectAll("circle.fugired").data([0]).enter()
         .append("svg:circle")
-        .attr("class", "fugired")
-        .attr("r", 5)
-        .attr("cx", 0)
-        .attr("cy", 0)
+        .attr
+          class: "fugired"
+          r: 5
+          cx: 0
+          cy: 0
 
       viz.selectAll("circle.fugiblue").data([0]).enter()
         .append("svg:circle")
-        .attr("class", "fugiblue")
-        .attr("r", 5)
-        .attr("cx", 0)
-        .attr("cy", 0)
+        .attr
+          class: "fugiblue"
+          r: 5
+          cx: 0
+          cy: 0
 
       $svg = $(viz[0][0]).closest("svg")
       $svg.mousemove((e) ->
