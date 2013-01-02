@@ -48,7 +48,10 @@ Plotocrat::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
+  root :to => 'plots#upload', :via => :post
   root :to => 'plots#index'
+  match ':slug' => 'plots#view', :slug => /[0-9a-f]{20}/
+  match '/error' => 'plots#error'
 
   # See how all your routes lay out with "rake routes"
 

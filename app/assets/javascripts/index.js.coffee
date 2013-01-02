@@ -1,5 +1,3 @@
-
-#        cdf(window.faithful);
 (->
   $ ->
     cdf = (data) ->
@@ -72,7 +70,7 @@
 
       viz.selectAll("text.xtitle").data([0]).enter()
         .append("svg:text").attr("class", "xtitle")
-        .text("Email size (kb)")
+        .text(d3.select('#cdf').attr('data-title'))
         .attr
           x: 40 + width / 2
           y: height + 30
@@ -173,18 +171,16 @@
 
     height = 400
     width = 600
-    window.emails = window.emails.filter((x) ->
-      x isnt 0
+    data = []
+    $('textarea#data').val().split("\n").forEach((x) ->
+      return if x.match(/^(#|\s*$)/)
+      n = Number(x)
+      # TODO warn about unparseable lines?
+      data.push(n) unless isNaN(n)
     )
-    window.normal = window.normal.map(Number).filter((x) ->
-      x isnt 0
-    ).sort(d3.ascending)
-    window.faithful = window.faithful.sort(d3.ascending)
-    window.foo = [1, 2]
-    cdf window.emails
-    cdf window.normal
-    cdf window.files
-    cdf window.faithful
-    cdf window.foo
+
+    data.sort(d3.ascending)
+
+    cdf data
 
 ).call this
