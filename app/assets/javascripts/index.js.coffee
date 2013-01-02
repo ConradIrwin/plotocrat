@@ -4,6 +4,11 @@
       kde = science.stats.distribution.kde().sample(data).resolution(200)
       x = undefined
       if kde.feelsLogarithmic()
+        d2 = []
+        # TODO: figure out the correct solution...
+        data.forEach (x) -> d2.push(x) unless x is 0
+        data = d2
+        kde = science.stats.distribution.kde().sample(data).resolution(200)
         x = d3.scale.log()
       else
         x = d3.scale.linear()
