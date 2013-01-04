@@ -20,6 +20,9 @@
       y = d3.scale.linear().domain([1, 0]).range([40, height])
       yk = d3.scale.linear().domain([kde.max(), 0]).range([40, height])
 
+      label = d3.select("#cdf").append("div")
+      title = d3.select('#cdf').attr('data-title')
+
       viz = d3.select("#cdf")
         .style("width", width)
         .style("height", height)
@@ -75,7 +78,7 @@
 
       viz.selectAll("text.xtitle").data([0]).enter()
         .append("svg:text").attr("class", "xtitle")
-        .text(d3.select('#cdf').attr('data-title'))
+        .text(title)
         .attr
           x: 40 + width / 2
           y: height + 30
@@ -168,11 +171,13 @@
         $svg.find(".fugired, .fugiblue").attr "cx", x(pos)
         $svg.find(".fugiblue").attr "cy", yk(kde(pos))
         $svg.find(".fugired").attr "cy", y(kde.inverseQuantile(pos))
+        label.html(title + "=" + pos + "<br/>" + "cumulative = " + (kde.inverseQuantile(pos)) * 100 + "%<br/>" + "mirrored = " + (1 - kde.inverseQuantile(pos)) * 100 + "%<br/>" + "absolute = " + kde(pos))
       ).mouseover(->
         $svg.find("line.fugi").show()
       ).mouseout(->
         $svg.find("line.fugi").hide()
       )
+
 
     height = 400
     width = 600
