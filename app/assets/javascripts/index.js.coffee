@@ -94,7 +94,7 @@
       viz.selectAll("text.y2title").data([0]).enter()
         .append("svg:text")
         .attr("class", "y2title")
-        .text("Count so far")
+        .text("Cumulative Probability")
         .attr
           transform: "rotate(90 " + (width + 10) + " " + (40 + height / 2) + ")"
           x: width + 10
@@ -171,7 +171,7 @@
         $svg.find(".fugired, .fugiblue").attr "cx", x(pos)
         $svg.find(".fugiblue").attr "cy", yk(kde(pos))
         $svg.find(".fugired").attr "cy", y(kde.inverseQuantile(pos))
-        label.html(title + "=" + pos + "<br/>" + "cumulative = " + (kde.inverseQuantile(pos)) * 100 + "%<br/>" + "mirrored = " + (1 - kde.inverseQuantile(pos)) * 100 + "%<br/>" + "absolute = " + kde(pos))
+        label.html(title + "=" + pos + "<br/>" + "cumulative = " + (kde.inverseQuantile(pos)) * 100 +  "%<br/>" + "absolute = " + kde(pos))
       ).mouseover(->
         $svg.find("line.fugi").show()
       ).mouseout(->
