@@ -190,9 +190,9 @@ science.stats.distribution.kde = ->
     cache.cdf
 
   kde.feelsLogarithmic = ->
-    tenth = kde.quantile(0.1)
+    tenth = kde.quantile(0.01)
     fiftieth = kde.quantile(0.5)
-    ninetieth = kde.quantile(0.9)
+    ninetieth = kde.quantile(0.99)
 
     # if 50% of the data takes up <10% of the graph, it's logarithmic
     if (fiftieth - tenth) / (ninetieth - tenth) < 0.2
