@@ -3,6 +3,8 @@
     cdf = (data) ->
       kde = science.stats.distribution.kde().sample(data).resolution(200)
       x = undefined
+
+      isIntegral = d3.max(data, (x) -> x % 1) == 0
       if kde.feelsLogarithmic()
         d2 = []
         # TODO: figure out the correct solution...
@@ -74,31 +76,32 @@
 
         ).attr
           x: x
-          y: height + 15
+          y: height + 20
 
       viz.selectAll("text.xtitle").data([0]).enter()
         .append("svg:text").attr("class", "xtitle")
         .text(title)
         .attr
           x: 40 + width / 2
-          y: height + 30
+          y: height + 60
 
       viz.selectAll("text.ytitle").data([0]).enter()
         .append("svg:text").attr("class", "ytitle")
         .text("Probability")
         .attr
-          transform: "rotate(270 30 " + (40 + height / 2) + ")"
-          x: 20
-          y: 40 + height / 2
+          'text-anchor': 'middle'
+          transform: "rotate(-90)"
+          x: - (40 + height) / 2
+          y: 20
 
       viz.selectAll("text.y2title").data([0]).enter()
         .append("svg:text")
         .attr("class", "y2title")
         .text("Cumulative Probability")
         .attr
-          transform: "rotate(90 " + (width + 10) + " " + (40 + height / 2) + ")"
-          x: width + 10
-          y: 40 + height / 2
+          transform: "rotate(90)"
+          x: (height + 40) / 2
+          y: - (width + 20)
 
       viz.selectAll("path.pdf").data([kde.pdf()]).enter()
         .append("svg:path")
@@ -161,9 +164,11 @@
           cx: 0
           cy: 0
 
+      label.html(title + " =<br/>" + "cumulative = <br/>" + "density = ")
+
       $svg = $(viz[0][0]).closest("svg")
       $svg.mousemove((e) ->
-        pos = x.invert(e.clientX - 10)
+        pos = x.invert(e.pageX - $svg.offset()['left'])
         if pos < axisTicks[0]
           pos = axisTicks[0]
         else pos = axisTicks[axisTicks.length - 1]  if pos > axisTicks[axisTicks.length - 1]
@@ -171,7 +176,11 @@
         $svg.find(".fugired, .fugiblue").attr "cx", x(pos)
         $svg.find(".fugiblue").attr "cy", yk(kde(pos))
         $svg.find(".fugired").attr "cy", y(kde.inverseQuantile(pos))
-        label.html(title + "=" + pos + "<br/>" + "cumulative = " + (kde.inverseQuantile(pos)) * 100 +  "%<br/>" + "absolute = " + kde(pos))
+
+        value = if isIntegral then pos.toFixed() else pos.toPrecision(4)
+        cumulative = (kde.inverseQuantile(pos) * 100).toPrecision(4)
+        absolute = kde(pos).toPrecision(3)
+        label.html(title + " = " + value + "<br/>" + "cumulative = " + cumulative + "%<br/>" + "density = " + absolute)
       ).mouseover(->
         $svg.find("line.fugi").show()
       ).mouseout(->

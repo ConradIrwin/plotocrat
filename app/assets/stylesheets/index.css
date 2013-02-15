@@ -46,8 +46,8 @@ circle.percentile:hover {
 }
 
 text {
-    font-size: 12px;
-    font-family: sans-serif;
+    font-family: helvetica;
+    font-size: 14px;
     text-anchor: middle;
     fill: #282520;
 }
@@ -59,6 +59,44 @@ line {
 text {
     padding-top: 6px;
 
+}
+
+nav {
+    width: 200px;
+    height: 100%;
+    display: block;
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    right: 0;
+    border-left: 1px solid rgba(170, 170, 170, 0.8);
+}
+
+article {
+    margin-right: 200px;
+    text-align: center;
+}
+h1 {
+    margin-top: 50px;
+    font-family: sans-serif;
+}
+
+svg {
+    width: 640px;
+    height: 480px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+textarea {
+    width: 400px;
+    height: 200px;
+    border: 1px solid rgba(170,170,170,0.8);
+    padding: 10px;
 }
 
 /* Palette color codes */
