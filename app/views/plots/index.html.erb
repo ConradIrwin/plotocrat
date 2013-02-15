@@ -1,3 +1,25 @@
-<textarea></textarea>
+<nav></nav>
 
-<div id="cdf"></div>
+<div class="index">
+<h1>plotocrat.com</h1>
+
+<p>To get an instant graph of the probability density function of your data, simply upload it with curl:</p>
+
+<pre>
+    $ curl -F 'X-axis label=@/path/to/data.txt' plotocrat.com
+    http://plotocrat.com/cfbc354182ee1758100a
+</pre>
+
+<p>That will then give you something wonderful like this distribution of file sizes on my system shown below.<p>
+
+<h2>Why?</h2>
+
+<p>Statistics is hard and I like to get to know my data. The <a href="http://en.wikipedia.org/wiki/Probability_density_function">probability density function</a> (analytically calculated from your data using <a href="http://en.wikipedia.org/wiki/Kernel_density_estimation">kernel density estimation</a>) is a very easy way to see what your data looks like. How spread-out is the distribution, what shape is it, etc.</p>
+
+<p>In case you were wondering, the red dots are the 1st, 10th, 25th, 50th, 75th, 90th, and 99th <a href="http://en.wikipedia.org/wiki/Percentile">percentiles</a>. The blue dots are the <a href="http://en.wikipedia.org/wiki/Expected_value">expectation</a> (a kind of average) and the <a href="http://en.wikipedia.org/wiki/Mode_(statistics)">mode</a> (the highest point of probability density).
+
+<p>WARNING: This site uses logarithmic axes in places.</p>
+
+</div>
+<iframe class="index" src="http://plotocrat.com/cfbc354182ee1758100a" scrolling="no">
+
