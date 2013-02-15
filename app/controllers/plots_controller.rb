@@ -12,7 +12,7 @@ class PlotsController < ApplicationController
     end
 
     plot = Plot.new(:data => upload.read, :title => title).tap(&:save!)
-    render :text => url_for(:action => :view, :slug => plot.slug)
+    render :text => url_for(:action => :view, :slug => plot.slug) + "\n"
   rescue ActiveRecord::RecordInvalid => e
     render :status => 401, :text => url_for(:action => :error, :error => e.message)
   end
