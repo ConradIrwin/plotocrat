@@ -3,18 +3,43 @@ path {
     stroke: red;
 }
 
+@-webkit-keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 path.cdf {
     stroke: #DE1629;
+    -webkit-animation: fadeIn;
+    -webkit-animation-duration: 0.4s;
+    -webkit-animation-fill-mode: forwards;
+}
+
+@-webkit-keyframes scaleIn {
+  from { -webkit-transform: scaleY(0); -webkit-transform-origin: bottom; }
+  to   { -webkit-transform: scaleY(1); -webkit-transform-origin: bottom; }
 }
 
 path.pdf {
     stroke: #57DCB1;
     fill: rgba(140, 220, 194, 0.2);
+    -webkit-animation: scaleIn;
+    -webkit-animation-duration: 0.5s;
+    -webkit-animation-fill-mode: forwards;
+}
+
+@-webkit-keyframes fadeInSlowly {
+  from { opacity: 0; }
+  80% { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 circle.mode, circle.expectation {
     stroke: #57DCB1;
     fill: none;
+    -webkit-animation: fadeInSlowly;
+    -webkit-animation-duration: 0.625s;
+    -webkit-animation-fill-mode: forwards;
 }
 circle.mode:hover, circle.expectation:hover {
     fill: #57DCB1;
@@ -23,6 +48,9 @@ circle.mode:hover, circle.expectation:hover {
 circle.percentile {
     stroke: #DE1629;
     fill: none;
+    -webkit-animation: fadeInSlowly;
+    -webkit-animation-duration: 0.5s;
+    -webkit-animation-fill-mode: forwards;
 }
 
 circle.percentile:hover {
@@ -82,9 +110,14 @@ h1 {
     font-family: sans-serif;
 }
 
+#cdf {
+    height: 560px;
+}
+
 svg {
     width: 640px;
     height: 480px;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
 body {
