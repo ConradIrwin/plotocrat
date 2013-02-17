@@ -172,6 +172,7 @@
           cy: (d) -> d
 
         value_s = title + " = " + if isIntegral then value.toFixed() else value.toPrecision(4)
+        value_s = value_s.replace(/\((.*)\) *= ([0-9e\-\+\.]*)$/, (m, u, v) -> "= " + v + " " + u)
         cumulative_s = "cumulative = " + (cumulative * 100).toPrecision(4) + "%"
         absolute_s = "density = " + density.toPrecision(3)
 
