@@ -22,16 +22,17 @@
       y = d3.scale.linear().domain([1, 0]).range([40, height])
       yk = d3.scale.linear().domain([kde.max(), 0]).range([40, height])
 
-      label = d3.select("#cdf").append("div")
+      label = d3.select("#cdf").append("div").html(title + " = <br/>cumulative =<br/>density =")
       title = d3.select('#cdf').attr('data-title')
 
-      viz = d3.select("#cdf")
+      svg = d3.select("#cdf")
         .style("width", width)
         .style("height", height)
         .append("svg:svg")
         .attr("width", 40 + width)
         .attr("height", height + 40)
         .attr("class", "viz")
+      viz = svg
         .append("svg:g")
 
       viz.selectAll("line.ydivisions.strong").data([0, 1]).enter()
@@ -139,52 +140,84 @@
           cx: (d) -> x d[0]
           cy: (d) -> y d[1]
 
-      viz.selectAll("line.fugi").data([0]).enter()
-        .append("svg:line")
-        .attr
+
+      show_position = (raw_pos) ->
+        value = x.invert(raw_pos)
+        cumulative = kde.inverseQuantile(value)
+        density = kde(value)
+
+        if value < axisTicks[0]
+          value = axisTicks[0]
+        else if value > axisTicks[axisTicks.length - 1]
+          value = axisTicks[axisTicks.length - 1]
+
+        line = viz.selectAll("line.fugi").data([value])
+        line.enter().append("svg:line").attr
           class: "fugi"
           y1: y(0)
           y2: y(1)
+        line.attr
           x1: x
           x2: x
 
-      viz.selectAll("circle.fugired").data([0]).enter()
-        .append("svg:circle")
-        .attr
-          class: "fugired"
+
+        cd = [yk(density), y(cumulative)]
+
+        circles = viz.selectAll("circle.fugi").data(cd)
+        circles.enter().append("svg:circle").attr
           r: 5
-          cx: 0
-          cy: 0
+          class: 'fugi'
+        circles.attr
+          cx: x(value)
+          cy: (d) -> d
 
-      viz.selectAll("circle.fugiblue").data([0]).enter()
-        .append("svg:circle")
-        .attr
-          class: "fugiblue"
-          r: 5
-          cx: 0
-          cy: 0
+        value_s = title + " = " + if isIntegral then value.toFixed() else value.toPrecision(4)
+        cumulative_s = "cumulative = " + (cumulative * 100).toPrecision(4) + "%"
+        absolute_s = "density = " + density.toPrecision(3)
 
-      label.html(title + " =<br/>" + "cumulative = <br/>" + "density = ")
+        label.html([value_s, cumulative_s, absolute_s].join("<br/>"))
 
-      $svg = $(viz[0][0]).closest("svg")
-      $svg.mousemove((e) ->
-        pos = x.invert(e.pageX - $svg.offset()['left'])
-        if pos < axisTicks[0]
-          pos = axisTicks[0]
-        else pos = axisTicks[axisTicks.length - 1]  if pos > axisTicks[axisTicks.length - 1]
-        $svg.find("line.fugi").attr("x1", x(pos)).attr "x2", x(pos)
-        $svg.find(".fugired, .fugiblue").attr "cx", x(pos)
-        $svg.find(".fugiblue").attr "cy", yk(kde(pos))
-        $svg.find(".fugired").attr "cy", y(kde.inverseQuantile(pos))
+      toggle_fugi = (visible) ->
+        viz.selectAll(".fugi").style
+          display: if visible then 'block' else 'none'
 
-        value = if isIntegral then pos.toFixed() else pos.toPrecision(4)
-        cumulative = (kde.inverseQuantile(pos) * 100).toPrecision(4)
-        absolute = kde(pos).toPrecision(3)
-        label.html(title + " = " + value + "<br/>" + "cumulative = " + cumulative + "%<br/>" + "density = " + absolute)
-      ).mouseover(->
-        $svg.find("line.fugi").show()
-      ).mouseout(->
-        $svg.find("line.fugi").hide()
+      svg.on('mousemove', () ->
+        show_position d3.mouse(svg.node())[0]
+      ).on('mouseover', ->
+        toggle_fugi true
+      ).on('mouseout', ->
+        toggle_fugi false
+      )
+
+      is_multitouch = false
+      is_scrolling = null
+      start = []
+      svg.on('touchmove', (e) ->
+        touches = d3.touches svg.node()
+
+        # ensure that we don't insert a line after the user releases
+        # one finger from zoom-pinching
+        is_multitouch ||= touches.length > 1
+
+        # If the user is moving one finger up or down, they probably want to scroll
+        if is_scrolling == null
+          is_scrolling = Math.abs(touches[0][0] - start[0][0]) < Math.abs(touches[0][1] - start[0][1])
+
+        if is_multitouch || is_scrolling
+          toggle_fugi false
+          return
+
+        toggle_fugi true
+        show_position touches[0][0]
+        # prevent scrolling
+        d3.event.preventDefault()
+
+      ).on('touchstart', ->
+        start = d3.touches svg.node()
+        is_scrolling = null
+        is_multitouch = false
+      ).on('touchend', ->
+        toggle_fugi false
       )
 
 
