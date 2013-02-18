@@ -11,7 +11,16 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130101213921) do
+ActiveRecord::Schema.define(:version => 20130218121945) do
+
+  create_table "gauge_values", :force => true do |t|
+    t.integer  "series_id",  :null => false
+    t.float    "value",      :null => false
+    t.string   "url"
+    t.datetime "created_at", :null => false
+  end
+
+  add_index "gauge_values", ["series_id"], :name => "index_gauge_values_on_series_id"
 
   create_table "plots", :force => true do |t|
     t.text     "slug",       :null => false
@@ -22,5 +31,13 @@ ActiveRecord::Schema.define(:version => 20130101213921) do
   end
 
   add_index "plots", ["slug"], :name => "index_plots_on_slug"
+
+  create_table "series", :force => true do |t|
+    t.string   "name",       :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "series", ["name"], :name => "index_series_on_name"
 
 end

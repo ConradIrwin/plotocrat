@@ -1,0 +1,7 @@
+<h1>Series</h1>
+
+<ul>
+  <% @series.each do |series| %>
+    <li><%= link_to series.name, series %></li>
+  <% end %>
+</ul>

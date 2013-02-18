@@ -120,6 +120,7 @@
 
           label.html(label.html() + "<br/>" + [cumulative_s, absolute_s].join("<br/>"))
 
+    return if $('#cdf').length == 0
     height = 400
     width = 600
 
