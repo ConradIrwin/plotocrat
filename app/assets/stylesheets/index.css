@@ -1,4 +1,4 @@
-path {
+#cdf path {
     fill: none;
     stroke: red;
 }
@@ -8,7 +8,7 @@ path {
   to   { opacity: 1; }
 }
 
-path.cdf {
+#cdf path.cdf {
     stroke: #DE1629;
     -webkit-animation: fadeIn;
     -webkit-animation-duration: 0.4s;
@@ -20,7 +20,7 @@ path.cdf {
   to   { -webkit-transform: scaleY(1); -webkit-transform-origin: bottom; }
 }
 
-path.pdf {
+#cdf path.pdf {
     stroke: #57DCB1;
     fill: rgba(140, 220, 194, 0.2);
     -webkit-animation: scaleIn;
@@ -34,18 +34,18 @@ path.pdf {
   to   { opacity: 1; }
 }
 
-circle.mode, circle.expectation {
+#cdf circle.mode, #cdf circle.expectation {
     stroke: #57DCB1;
     fill: none;
     -webkit-animation: fadeInSlowly;
     -webkit-animation-duration: 0.625s;
     -webkit-animation-fill-mode: forwards;
 }
-circle.mode:hover, circle.expectation:hover {
+#cdf circle.mode:hover, #cdf circle.expectation:hover {
     fill: #57DCB1;
 }
 
-circle.percentile {
+#cdf circle.percentile {
     stroke: #DE1629;
     fill: none;
     -webkit-animation: fadeInSlowly;
@@ -53,7 +53,7 @@ circle.percentile {
     -webkit-animation-fill-mode: forwards;
 }
 
-circle.percentile:hover {
+#cdf circle.percentile:hover {
     fill: #DE1629;
 }
 
@@ -114,7 +114,7 @@ h1 {
     height: 560px;
 }
 
-svg {
+#cdf svg {
     width: 640px;
     height: 480px;
     -webkit-tap-highlight-color: rgba(0,0,0,0);

@@ -1,0 +1,38 @@
+#linechart {
+  position: relative;
+  display: inline-block;
+}
+
+#linechart svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+#linechart .axis path, #linechart .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+#linechart .axis .grid line {
+  stroke: rgba(0, 0, 0, 0.1);
+}
+
+#linechart .axis text {
+  font-size: 10pt;
+}
+
+#linechart .series path {
+  fill: none;
+  stroke-width: 2px;
+}
+
+#linechart .series circle {
+  stroke-width: 0;
+}
+
+#linechart a {
+  position: absolute;
+  display: block;
+}
