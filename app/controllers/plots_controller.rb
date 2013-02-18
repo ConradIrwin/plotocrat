@@ -21,6 +21,11 @@ class PlotsController < ApplicationController
     @plot = Plot.where(:slug => params[:slug]).first
   end
 
+  def compare
+    @plot1 = Plot.where(:slug => params[:slug1]).first
+    @plot2 = Plot.where(:slug => params[:slug2]).first
+  end
+
   def error
     render :text => params[:error]
   end

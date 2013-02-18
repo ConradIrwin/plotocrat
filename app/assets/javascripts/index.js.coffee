@@ -1,39 +1,43 @@
 (->
   $ ->
-    cdf = (data) ->
-      kde = science.stats.distribution.kde().sample(data).resolution(200)
-      x = undefined
 
-      isIntegral = d3.max(data, (x) -> x % 1) == 0
-      if kde.feelsLogarithmic()
-        d2 = []
-        # TODO: figure out the correct solution...
-        data.forEach (x) -> d2.push(x) unless x is 0
-        data = d2
-        kde = science.stats.distribution.kde().sample(data).resolution(200)
+    chart = (datasets) ->
+      kdes = datasets.map (data) -> science.stats.distribution.kde().sample(data).resolution(200)
+
+      feelsLogarithmic = kdes.some((kde) -> kde.feelsLogarithmic)
+
+      if feelsLogarithmic
+      # remove all 0s as they play merry havoc with log scales.
+        datasets = datasets.map (data) ->
+          data.filter (d) -> d != 0
+
+        kdes = datasets.map (data) -> science.stats.distribution.kde().sample(data).resolution(200)
+
         x = d3.scale.log()
       else
         x = d3.scale.linear()
 
-      kde.scale x.copy()
-      x.clamp(true).domain([data[0], data[data.length - 1]]).range([40, width]).nice()
+      kdes.forEach (kde) -> kde.scale x.copy()
+      max = d3.max(datasets.map (data) -> d3.max(data))
+      min = d3.min(datasets.map (data) -> d3.min(data))
+
+      x.clamp(true).domain([min, max]).range([40, width]).nice()
       axisTicks = x.ticks(5)
 
       y = d3.scale.linear().domain([1, 0]).range([40, height])
-      yk = d3.scale.linear().domain([kde.max(), 0]).range([40, height])
+
+      yk = d3.scale.linear().domain([d3.max(kdes, (kde) -> kde.max()), 0]).range([40, height])
 
       label = d3.select("#cdf").append("div").html(title + " = <br/>cumulative =<br/>density =")
       title = d3.select('#cdf').attr('data-title')
 
-      svg = d3.select("#cdf")
+      viz = svg = d3.select("#cdf")
         .style("width", width)
         .style("height", height)
         .append("svg:svg")
         .attr("width", 40 + width)
         .attr("height", height + 40)
         .attr("class", "viz")
-      viz = svg
-        .append("svg:g")
 
       viz.selectAll("line.ydivisions.strong").data([0, 1]).enter()
         .append("svg:line")
@@ -79,12 +83,6 @@
           x: x
           y: height + 20
 
-      viz.selectAll("text.xtitle").data([0]).enter()
-        .append("svg:text").attr("class", "xtitle")
-        .text(title)
-        .attr
-          x: 40 + width / 2
-          y: height + 60
 
       viz.selectAll("text.ytitle").data([0]).enter()
         .append("svg:text").attr("class", "ytitle")
@@ -104,35 +102,41 @@
           x: (height + 40) / 2
           y: - (width + 20)
 
-      viz.selectAll("path.pdf").data([kde.pdf()]).enter()
+      viz.selectAll("path.pdf").data(kdes).enter()
         .append("svg:path")
         .attr
-          class: "pdf"
-          d: d3.svg.line().x((d) -> x d[0]).y((d) -> yk d[1])
+          class: (d, i) -> "pdf pdf" + i
+          d: (kde) -> d3.svg.line().x((d) -> x d[0]).y((d) -> yk d[1])(kde.pdf())
 
-      viz.selectAll("path.cdf").data([kde.cdf()]).enter()
+      viz.selectAll("path.cdf").data(kdes).enter()
         .append("svg:path")
         .attr
           class: "cdf"
-          d: d3.svg.line().x((d) -> x d[0]).y((d) -> y d[1])
+          d: (kde) -> d3.svg.line().x((d) -> x d[0]).y((d) -> y d[1])(kde.cdf())
 
-      viz.selectAll("circle.mode").data([kde.mode()]).enter()
+
+      viz.selectAll("circle.mode").data(kdes).enter()
         .append("svg:circle")
         .attr
           class: "mode"
           r: 4
-          cx: x
-          cy: (d) -> yk kde(d)
+          cx: (kde) -> x kde.mode()
+          cy: (kde) -> yk kde(kde.mode())
 
-      viz.selectAll("circle.expectation").data([kde.expectation()]).enter()
+      viz.selectAll("circle.expectation").data(kdes).enter()
         .append("svg:circle")
         .attr
           class: "expectation"
           r: 4
-          cx: x
-          cy: -> y 0.25
+          cx: (kde) -> x kde.expectation()
+          cy: (kde) -> yk kde(kde.expectation()) / 2
 
-      viz.selectAll("circle.percentile").data(kde.qf()).enter()
+      viz.selectAll("g.circles").data(kdes).enter()
+        .append("svg:g")
+        .attr
+          class: "circles"
+        .selectAll("circle.percentile")
+        .data((kde) -> kde.qf()).enter()
         .append("svg:circle")
         .attr
           class: "percentile"
@@ -140,11 +144,15 @@
           cx: (d) -> x d[0]
           cy: (d) -> y d[1]
 
+      viz.selectAll("text.xtitle").data([0]).enter()
+        .append("svg:text").attr("class", "xtitle")
+        .text(title)
+        .attr
+          x: 40 + width / 2
+          y: height + 60
 
       show_position = (raw_pos) ->
         value = x.invert(raw_pos)
-        cumulative = kde.inverseQuantile(value)
-        density = kde(value)
 
         if value < axisTicks[0]
           value = axisTicks[0]
@@ -160,23 +168,28 @@
           x1: x
           x2: x
 
-
-        cd = [yk(density), y(cumulative)]
-
-        circles = viz.selectAll("circle.fugi").data(cd)
-        circles.enter().append("svg:circle").attr
-          r: 5
-          class: 'fugi'
-        circles.attr
-          cx: x(value)
-          cy: (d) -> d
-
-        value_s = title + " = " + if isIntegral then value.toFixed() else value.toPrecision(4)
+        value_s = title + " = " + value.toPrecision(4)
         value_s = value_s.replace(/\((.*)\) *= ([0-9e\-\+\.]*)$/, (m, u, v) -> "= " + v + " " + u)
-        cumulative_s = "cumulative = " + (cumulative * 100).toPrecision(4) + "%"
-        absolute_s = "density = " + density.toPrecision(3)
+        label.html(value_s)
 
-        label.html([value_s, cumulative_s, absolute_s].join("<br/>"))
+        kdes.forEach (kde, i) ->
+          cumulative = kde.inverseQuantile(value)
+          density = kde(value)
+          cd = [yk(density), y(cumulative)]
+
+          circles = viz.selectAll("circle.fugi" + i).data(cd)
+          circles.enter().append("svg:circle").attr
+            r: 5
+            class: 'fugi fugi' + i
+          circles.attr
+            cx: x(value)
+            cy: (d) -> d
+
+
+          cumulative_s = "cumulative = " + (cumulative * 100).toPrecision(4) + "%"
+          absolute_s = "density = " + density.toPrecision(3)
+
+          label.html(label.html() + "<br/>" + [cumulative_s, absolute_s].join("<br/>"))
 
       toggle_fugi = (visible) ->
         viz.selectAll(".fugi").style
@@ -224,16 +237,18 @@
 
     height = 400
     width = 600
-    data = []
-    $('textarea#data').val().split("\n").forEach((x) ->
-      return if x.match(/^(#|\s*$)/)
-      n = Number(x)
-      # TODO warn about unparseable lines?
-      data.push(n) unless isNaN(n)
-    )
 
-    data.sort(d3.ascending)
+    datasets = [1, 2].map (i) ->
+      data = []
+      $('textarea#data' + i).val().split("\n").forEach((x) ->
+        return if x.match(/^(#|\s*$)/)
+        n = Number(x)
+        # TODO warn about unparseable lines?
+        data.push(n) unless isNaN(n)
+      )
 
-    cdf data
+      data.sort(d3.ascending)
+
+    chart datasets
 
 ).call this

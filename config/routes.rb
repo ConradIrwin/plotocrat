@@ -51,6 +51,7 @@ Plotocrat::Application.routes.draw do
   root :to => 'plots#upload', :via => :post
   root :to => 'plots#index'
   match ':slug' => 'plots#view', :slug => /[0-9a-f]{20}/
+  match ':slug1/:slug2' => 'plots#compare', :slug1 => /[0-9a-f]{20}/, :slug2 => /[0-9a-f]{20}/
   match '/error' => 'plots#error'
 
   # See how all your routes lay out with "rake routes"
