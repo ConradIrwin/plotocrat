@@ -1,4 +1,15 @@
+# This is not enabled on plotocrat.com.
+#
+# This code is mainly here because we wanted to hack something up
+# internally.
+#
+# If you're looking at this code and thinking you want to use it too,
+# I'd suggest installing Graphite or using librato.
 class SeriesController < ApplicationController
+  before_filter do
+    redirect_to :controller => :plots, :action => :index if ENV["DISABLE_SERIES_SUPPORT"]
+  end
+
   # GET /series
   # GET /series.json
   def index
