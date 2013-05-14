@@ -7,14 +7,14 @@ import (
 var connection = (*mgo.Session)(nil)
 
 func database() *mgo.Database {
-    return connection.DB("");
+	return connection.DB("")
 }
 
 func Setup(url string) {
-    session, err := mgo.Dial(url)
+	session, err := mgo.Dial(url)
 
-    if err != nil {
-        panic(err)
-    }
-    connection = session
+	if err != nil {
+		panic(err)
+	}
+	connection = session
 }

@@ -2,12 +2,12 @@ package main
 
 import (
 	"./db"
-    "./http"
-    "os"
+	"./http"
+	"os"
 )
 
 func main() {
-    print("Heloo !")
+	print("Heloo !")
 	db.Setup(os.Getenv("MONGOHQ_URL"))
-    http.Listen(os.Getenv("PORT"))
+	http.Listen(os.Getenv("PORT"))
 }

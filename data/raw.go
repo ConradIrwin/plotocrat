@@ -5,15 +5,15 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"fmt"
+	"hash"
 	"io"
 	"strconv"
 	"strings"
 	"time"
-    "hash"
 )
 
 type Raw struct {
-    Uid         string
+	Uid         string
 	Name        string
 	Data        string
 	Uploaded_at time.Time
@@ -54,9 +54,9 @@ func parse(input io.Reader, on_value func(float64) error, on_error func(string) 
 }
 
 func hash_uid(h hash.Hash) string {
-    b := make([]byte, 0, h.Size());
-    h.Sum(b);
-    return fmt.Sprintf("%x", b[0:10]);
+	b := make([]byte, 0, h.Size())
+	h.Sum(b)
+	return fmt.Sprintf("%x", b[0:10])
 }
 
 func Upload(name string, file io.Reader) (*Raw, error) {
@@ -89,7 +89,7 @@ func Upload(name string, file io.Reader) (*Raw, error) {
 		return nil, err
 	}
 
-    raw.Uid = hash_uid(hash)
+	raw.Uid = hash_uid(hash)
 	raw.Data = data.String()
 
 	return raw, nil
