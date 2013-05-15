@@ -40,7 +40,7 @@ func index(res http.ResponseWriter, req *http.Request) {
 					return
 				}
 
-				raw, err := data.Upload(key, file)
+				plot, err := data.Parse(key, file)
 
 				if err != nil {
 					fmt.Println(err)
@@ -48,8 +48,8 @@ func index(res http.ResponseWriter, req *http.Request) {
 					return
 				}
 
-				fmt.Fprintln(res, "Got", key, raw.Uid, raw.Uploaded_at)
-				for value := range raw.Series() {
+				fmt.Fprintln(res, "Got", key, plot.Uid, plot.UploadedAt)
+				for value := range plot.Data {
 					fmt.Fprintln(res, ">", value)
 				}
 			}
