@@ -30,9 +30,9 @@ func index(res http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		for key, file_headers := range req.MultipartForm.File {
-			for _, file_header := range file_headers {
-				file, err := file_header.Open()
+		for key, fileHeaders := range req.MultipartForm.File {
+			for _, fileHeader := range fileHeaders {
+				file, err := fileHeader.Open()
 
 				if err != nil {
 					fmt.Println(err)
@@ -49,7 +49,7 @@ func index(res http.ResponseWriter, req *http.Request) {
 				}
 
 				fmt.Fprintln(res, "Got", key, plot.Uid, plot.UploadedAt)
-				for value := range plot.Data {
+				for _, value := range plot.Data {
 					fmt.Fprintln(res, ">", value)
 				}
 			}

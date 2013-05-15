@@ -40,9 +40,9 @@ func Parse(name string, file io.Reader) (*Plot, error) {
 			continue
 		}
 
-		value, parse_err := strconv.ParseFloat(line, 64)
+		value, parseErr := strconv.ParseFloat(line, 64)
 
-		if parse_err == nil {
+		if parseErr == nil {
 			plot.Data = append(plot.Data, value)
 			values += 1
 			if values > 1000*1000 {
@@ -56,12 +56,12 @@ func Parse(name string, file io.Reader) (*Plot, error) {
 		}
 	}
 
-	plot.Uid = hash_uid(hash)
+	plot.Uid = hashUid(hash)
 
 	return plot, nil
 }
 
-func hash_uid(h hash.Hash) string {
+func hashUid(h hash.Hash) string {
 	b := make([]byte, 0, h.Size())
 	h.Sum(b)
 	return fmt.Sprintf("%x", b[0:10])
