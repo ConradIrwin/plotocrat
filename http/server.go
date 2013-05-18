@@ -22,6 +22,9 @@ func index(res http.ResponseWriter, req *http.Request) {
 		fmt.Fprintln(res, "hello, world")
 	} else if req.Method == "POST" {
 
+		// Limit the size of uploaded files: https://code.google.com/p/go/issues/detail?id=2093
+		req.Body = http.MaxBytesReader(res, req.Body, 10 * 1024 * 1024)
+
 		err := req.ParseMultipartForm(10 * 1024 * 1024)
 
 		if err != nil {
