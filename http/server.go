@@ -14,9 +14,9 @@ func router() *mux.Router {
 
 	r.HandleFunc("/", upload).Methods("POST")
 	r.HandleFunc("/", index).Methods("GET")
-	r.HandleFunc("/{uid:[a-f0-9]{20}}.txt", download(asTxt)).Methods("GET")
-	r.HandleFunc("/{uid:[a-f0-9]{20}}.tsv", download(asTsv)).Methods("GET")
-	r.HandleFunc("/{uid:[a-f0-9]{20}}.json", download(asJson)).Methods("GET")
+	r.HandleFunc("/{uid:[a-f0-9]{20}}.txt", download(asTxt)).Methods("GET").Name("txt")
+	r.HandleFunc("/{uid:[a-f0-9]{20}}.tsv", download(asTsv)).Methods("GET").Name("tsv")
+	r.HandleFunc("/{uid:[a-f0-9]{20}}.json", download(asJson)).Methods("GET").Name("json")
 
 	return r;
 }
@@ -72,17 +72,13 @@ func upload(res http.ResponseWriter, req *http.Request) {
 				return
 			}
 
-			plot, err = db.LoadPlot(plot.Uid)
+			url, err := router().Get("tsv").URL("uid", plot.Uid)
 			if err != nil {
-				fmt.Println(err)
-				http.Error(res, "Reading from database failed", http.StatusInternalServerError)
-				return
+				panic(err)
 			}
 
-			fmt.Fprintln(res, "Gotterred", key, plot.Uid, plot.UploadedAt)
-			for _, value := range plot.Values() {
-				fmt.Fprintln(res, ">", value)
-			}
+			http.Redirect(res, req, url.String(), http.StatusMovedPermanently);
+			fmt.Fprintln(res, "http://" + req.Host + url.String());
 		}
 	}
 }
