@@ -1,7 +1,7 @@
 package http
 
 import (
-	"../data"
+	"github.com/ConradIrwin/plotocrat/data"
 	"fmt"
 	"net/http"
 )

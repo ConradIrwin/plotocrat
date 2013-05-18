@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./db"
-	"./http"
+	"github.com/ConradIrwin/plotocrat/db"
+	"github.com/ConradIrwin/plotocrat/http"
 	"os"
     "fmt"
 )
