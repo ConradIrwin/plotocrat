@@ -8,13 +8,14 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"bytes"
 	"time"
 )
 
 type Plot struct {
 	Uid        string
 	Name       string
-	Data       []float64
+	Data       string
 	UploadedAt time.Time
 }
 
@@ -24,26 +25,49 @@ type plotFileReader struct {
 	errors int
 }
 
+func newPlotFileReader(input io.Reader) *plotFileReader {
+	return &plotFileReader{bufio.NewReader(input), 0, 0}
+}
+
 func Parse(name string, file io.Reader) (*Plot, error) {
-	plot := &Plot{"", name, []float64{}, time.Now()}
+	plot := &Plot{Name: name, UploadedAt: time.Now()}
 	hash := sha256.New()
-	pipe := bufio.NewReader(io.TeeReader(file, hash))
-	parser := &plotFileReader{pipe, 0, 0}
+	data := new(bytes.Buffer)
+
+	pipe := io.TeeReader(file, data)
+	pipe = io.TeeReader(pipe, hash)
+	parser := newPlotFileReader(pipe)
 
 	for {
-		value, err := parser.readFloat()
+		_, err := parser.readFloat()
 		if err == io.EOF {
 			break
 		}
 		if err != nil {
 			return nil, err
 		}
-		plot.Data = append(plot.Data, value)
 	}
 
 	plot.Uid = hashUid(hash)
+	plot.Data = data.String()
 
 	return plot, nil
+}
+
+func (plot *Plot) Values() []float64 {
+	data := make([]float64, 0)
+	parser := newPlotFileReader(strings.NewReader(plot.Data))
+
+	for {
+		value, err := parser.readFloat()
+		if err == io.EOF {
+			return data;
+		}
+		if err != nil {
+			continue
+		}
+		data = append(data, value)
+	}
 }
 
 func (self plotFileReader) readFloat() (float64, error) {
@@ -73,7 +97,6 @@ func (self plotFileReader) readFloat() (float64, error) {
 			}
 		}
 	}
-	panic("remove this in Go 1.1")
 }
 
 func hashUid(h hash.Hash) string {

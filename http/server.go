@@ -62,8 +62,8 @@ func index(res http.ResponseWriter, req *http.Request) {
 					return
 				}
 
-				fmt.Fprintln(res, "Gotted", key, plot.Uid, plot.UploadedAt)
-				for _, value := range plot.Data {
+				fmt.Fprintln(res, "Gotterred", key, plot.Uid, plot.UploadedAt)
+				for _, value := range plot.Values() {
 					fmt.Fprintln(res, ">", value)
 				}
 			}
