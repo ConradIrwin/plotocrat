@@ -1,7 +1,7 @@
 package db
 
 import (
-    "github.com/ConradIrwin/plotocrat/data"
+    "github.com/ConradIrwin/plotocrat/models"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 	"sync"
@@ -36,13 +36,13 @@ func Setup(url string) {
 	connection = session
 }
 
-func SavePlot(plot *data.Plot) error {
+func SavePlot(plot *models.Plot) error {
 	_, err := plotCollection().Upsert(bson.M{"uid": plot.Uid}, plot);
 	return err;
 }
 
-func LoadPlot(uid string) (*data.Plot, error) {
-	plot := new(data.Plot)
+func LoadPlot(uid string) (*models.Plot, error) {
+	plot := new(models.Plot)
 	err := plotCollection().Find(bson.M{"uid": uid}).One(plot);
 
 	if err != nil {

@@ -1,7 +1,7 @@
 package http
 
 import (
-	"github.com/ConradIrwin/plotocrat/data"
+	"github.com/ConradIrwin/plotocrat/models"
 	"github.com/ConradIrwin/plotocrat/db"
 	"github.com/gorilla/mux"
 	"fmt"
@@ -57,7 +57,7 @@ func upload(res http.ResponseWriter, req *http.Request) {
 				return
 			}
 
-			plot, err := data.Parse(key, file)
+			plot, err := models.Parse(key, file)
 
 			if err != nil {
 				fmt.Println(err)
@@ -83,7 +83,7 @@ func upload(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func download(handler func(*data.Plot, http.ResponseWriter)) func (http.ResponseWriter, *http.Request) {
+func download(handler func(*models.Plot, http.ResponseWriter)) func (http.ResponseWriter, *http.Request) {
 	return (func (res http.ResponseWriter, req *http.Request) {
 		plot, err := db.LoadPlot(mux.Vars(req)["uid"])
 
@@ -97,12 +97,12 @@ func download(handler func(*data.Plot, http.ResponseWriter)) func (http.Response
 	});
 }
 
-func asTxt(plot *data.Plot, res http.ResponseWriter) {
+func asTxt(plot *models.Plot, res http.ResponseWriter) {
 	res.Header().Set("Content-Type", "text/plain; charset=utf-8");
 	fmt.Fprint(res, plot.Data);
 }
 
-func asJson(plot *data.Plot, res http.ResponseWriter) {
+func asJson(plot *models.Plot, res http.ResponseWriter) {
 	res.Header().Set("Content-Type", "application/json");
 	enc := json.NewEncoder(res)
 
@@ -112,7 +112,7 @@ func asJson(plot *data.Plot, res http.ResponseWriter) {
 	}
 }
 
-func asTsv(plot *data.Plot, res http.ResponseWriter) {
+func asTsv(plot *models.Plot, res http.ResponseWriter) {
 	res.Header().Set("Content-Type", "text/plain; charset=utf-8");
 	for _, value := range plot.Values() {
 		fmt.Fprintln(res, value);
