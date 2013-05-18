@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/ConradIrwin/plotocrat/data"
+	"github.com/ConradIrwin/plotocrat/db"
 	"fmt"
 	"net/http"
 )
@@ -43,11 +44,25 @@ func index(res http.ResponseWriter, req *http.Request) {
 
 				if err != nil {
 					fmt.Println(err)
-					http.Error(res, "Upload failed", http.StatusInternalServerError)
+					http.Error(res, "Parsing data failed", http.StatusInternalServerError)
 					return
 				}
 
-				fmt.Fprintln(res, "Got", key, plot.Uid, plot.UploadedAt)
+				err = db.SavePlot(plot)
+				if err != nil {
+					fmt.Println(err)
+					http.Error(res, "Writing to database failed", http.StatusInternalServerError)
+					return
+				}
+
+				plot, err = db.LoadPlot(plot.Uid)
+				if err != nil {
+					fmt.Println(err)
+					http.Error(res, "Reading from database failed", http.StatusInternalServerError)
+					return
+				}
+
+				fmt.Fprintln(res, "Gotted", key, plot.Uid, plot.UploadedAt)
 				for _, value := range plot.Data {
 					fmt.Fprintln(res, ">", value)
 				}
