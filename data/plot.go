@@ -10,6 +10,7 @@ import (
 	"strings"
 	"bytes"
 	"time"
+	"unicode/utf8"
 )
 
 type Plot struct {
@@ -46,6 +47,10 @@ func Parse(name string, file io.Reader) (*Plot, error) {
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	if !utf8.Valid(data.Bytes()) {
+		return nil, fmt.Errorf("invalid utf8 in upload")
 	}
 
 	plot.Uid = hashUid(hash)
