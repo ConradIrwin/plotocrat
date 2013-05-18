@@ -8,7 +8,6 @@ import (
 
 func Listen(port string) {
 	http.HandleFunc("/", index)
-	fmt.Println("Listening on port %s", port)
 
 	err := http.ListenAndServe(":"+port, nil)
 
