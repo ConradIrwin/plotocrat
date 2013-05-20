@@ -17,6 +17,7 @@ func router() *mux.Router {
 	r.HandleFunc("/{uid:[a-f0-9]{20}}.txt", download(asTxt)).Methods("GET").Name("txt")
 	r.HandleFunc("/{uid:[a-f0-9]{20}}.tsv", download(asTsv)).Methods("GET").Name("tsv")
 	r.HandleFunc("/{uid:[a-f0-9]{20}}.json", download(asJson)).Methods("GET").Name("json")
+	r.HandleFunc("/{uid:[a-f0-9]{20}}.svg", download(asSvg)).Methods("GET").Name("svg")
 
 	return r;
 }
@@ -110,6 +111,12 @@ func asJson(plot *models.Plot, res http.ResponseWriter) {
 	if err != nil {
 		panic(err);
 	}
+}
+
+func asSvg(plot *models.Plot, res http.ResponseWriter) {
+	res.Header().Set("Content-Type", "image/svg+xml")
+	viz := models.NewVisualization(plot)
+	viz.WriteTo(res)
 }
 
 func asTsv(plot *models.Plot, res http.ResponseWriter) {
