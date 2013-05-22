@@ -4,18 +4,16 @@ import (
 	"bytes"
 	svgo "github.com/ajstarks/svgo"
 	"io"
-	"sort"
 	"strconv"
 )
 
 type Visualization struct {
-	series series
+	series Series
 	width  int
 	height int
 	margin int
 }
 
-type series []float64
 type pair [2]float64
 
 type Scaler interface {
@@ -28,7 +26,7 @@ type scale struct {
 }
 
 func NewVisualization(plot *Plot) *Visualization {
-	series := newSeries(plot.Values())
+	series := NewSeries(plot.Values())
 	return &Visualization{series: series,
 		width:  640,
 		height: 480,
@@ -76,20 +74,6 @@ func (viz *Visualization) Domain() pair {
 
 func (viz *Visualization) Range() pair {
 	return pair{float64(viz.height - viz.margin), float64(viz.margin)}
-}
-
-func newSeries(n []float64) series {
-	series := n
-	sort.Float64s(series)
-	return series
-}
-
-func (series series) Range() pair {
-	return pair{series[0], series[len(series)-1]}
-}
-
-func (series series) Domain() pair {
-	return pair{0, float64(len(series)) - 1}
 }
 
 func (scale scale) Scale(x float64) float64 {
