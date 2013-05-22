@@ -20,27 +20,27 @@ type Plot struct {
 	UploadedAt time.Time
 }
 
-type plotFileReader struct {
+type plotValidator struct {
 	*bufio.Reader
 	values int
 	errors int
 }
 
-func newPlotFileReader(input io.Reader) *plotFileReader {
-	return &plotFileReader{bufio.NewReader(input), 0, 0}
+func newPlotValidator(input io.Reader) *plotValidator {
+	return &plotValidator{bufio.NewReader(input), 0, 0}
 }
 
-func Parse(name string, file io.Reader) (*Plot, error) {
+func NewPlot(name string, file io.Reader) (*Plot, error) {
 	plot := &Plot{Name: name, UploadedAt: time.Now()}
 	hash := sha256.New()
 	data := new(bytes.Buffer)
 
 	pipe := io.TeeReader(file, data)
 	pipe = io.TeeReader(pipe, hash)
-	parser := newPlotFileReader(pipe)
+	validator := newPlotValidator(pipe)
 
 	for {
-		_, err := parser.readFloat()
+		err := validator.checkNextLine()
 		if err == io.EOF {
 			break
 		}
@@ -49,8 +49,12 @@ func Parse(name string, file io.Reader) (*Plot, error) {
 		}
 	}
 
+	if validator.values == 0 {
+		return nil, fmt.Errorf("Must provide at least one number")
+	}
+
 	if !utf8.Valid(data.Bytes()) {
-		return nil, fmt.Errorf("invalid utf8 in upload")
+		return nil, fmt.Errorf("Invalid UTF-8 in upload")
 	}
 
 	plot.Uid = hashUid(hash)
@@ -61,46 +65,58 @@ func Parse(name string, file io.Reader) (*Plot, error) {
 
 func (plot *Plot) Values() []float64 {
 	data := make([]float64, 0)
-	parser := newPlotFileReader(strings.NewReader(plot.Data))
+	reader := bufio.NewReader(strings.NewReader(plot.Data))
 
 	for {
-		value, err := parser.readFloat()
+		line, err := reader.ReadString('\n')
 		if err == io.EOF {
 			return data;
 		}
-		if err != nil {
-			continue
+		value, success := parseFloat(strings.TrimSpace(line))
+		if success {
+			data = append(data, value)
 		}
-		data = append(data, value)
 	}
 }
 
-func (self plotFileReader) readFloat() (float64, error) {
-	for {
-		line, err := self.ReadString('\n')
-		if err != nil {
-			return 0, err
-		}
+func (self *plotValidator) checkNextLine() error {
+	line, err := self.ReadString('\n')
+	if err != nil {
+		return err
+	}
 
-		line = strings.TrimSpace(line)
-		if len(line) == 0 || line[0] == '#' {
-			continue
-		}
+	if isBlankOrComment(line) {
+		return nil
+	}
 
-		value, parseErr := strconv.ParseFloat(line, 64)
+	_, success := parseFloat(line)
 
-		if parseErr == nil {
-			self.values += 1
-			if self.values > 1000*1000 {
-				return 0, fmt.Errorf("Too many values in file (max is 1,000,000)")
-			}
-			return value, nil
-		} else {
-			self.errors += 1
-			if self.errors > 1000 {
-				return 0, fmt.Errorf("File too messy to read. Prefix lines with # to make them comments.")
-			}
+	if success {
+		self.values += 1
+		if self.values > 1000*1000 {
+			return fmt.Errorf("Too many values in file (max is 1,000,000)")
 		}
+	} else {
+		self.errors += 1
+		if self.errors > 1000 {
+			return fmt.Errorf("File too messy to read. Prefix lines with # to make them comments.")
+		}
+	}
+	return nil
+}
+
+func isBlankOrComment(line string) bool {
+	line = strings.TrimSpace(line)
+	return len(line) == 0 || line[0] == '#'
+}
+
+func parseFloat(line string) (value float64, success bool) {
+	line = strings.TrimSpace(line)
+	value, parseErr := strconv.ParseFloat(line, 64)
+	if parseErr {
+		return 0, false
+	} else {
+		return value, true
 	}
 }
 

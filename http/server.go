@@ -58,7 +58,7 @@ func upload(res http.ResponseWriter, req *http.Request) {
 				return
 			}
 
-			plot, err := models.Parse(key, file)
+			plot, err := models.NewPlot(key, file)
 
 			if err != nil {
 				fmt.Println(err)
