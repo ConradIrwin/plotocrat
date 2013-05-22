@@ -72,8 +72,8 @@ func (plot *Plot) Values() []float64 {
 		if err == io.EOF {
 			return data;
 		}
-		value, success := parseFloat(strings.TrimSpace(line))
-		if success {
+		value, err := parseFloat(line)
+		if err == nil {
 			data = append(data, value)
 		}
 	}
@@ -89,9 +89,9 @@ func (self *plotValidator) checkNextLine() error {
 		return nil
 	}
 
-	_, success := parseFloat(line)
+	_, err = parseFloat(line)
 
-	if success {
+	if err == nil {
 		self.values += 1
 		if self.values > 1000*1000 {
 			return fmt.Errorf("Too many values in file (max is 1,000,000)")
@@ -110,14 +110,9 @@ func isBlankOrComment(line string) bool {
 	return len(line) == 0 || line[0] == '#'
 }
 
-func parseFloat(line string) (value float64, success bool) {
+func parseFloat(line string) (float64, error) {
 	line = strings.TrimSpace(line)
-	value, parseErr := strconv.ParseFloat(line, 64)
-	if parseErr {
-		return 0, false
-	} else {
-		return value, true
-	}
+	return strconv.ParseFloat(line, 64)
 }
 
 func hashUid(h hash.Hash) string {
