@@ -38,6 +38,9 @@ func (viz *Visualization) WriteTo(w io.Writer) error {
 	svg.Start(viz.width, viz.height)
 
 	svg.Path(viz.cumulativeProbabilityData(), "fill: none; stroke: red")
+	svg.Rect(viz.margin, viz.margin,
+		viz.width-(viz.margin*2), viz.height-(viz.margin*2),
+		"fill: none; stroke: #ddd")
 
 	svg.End()
 	return nil
