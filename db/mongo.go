@@ -1,7 +1,7 @@
 package db
 
 import (
-    "github.com/ConradIrwin/plotocrat/models"
+	"github.com/ConradIrwin/plotocrat/models"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 	"sync"
@@ -15,16 +15,16 @@ func database() *mgo.Database {
 }
 
 func plotCollection() (collection *mgo.Collection) {
-	collection = database().C("plots");
+	collection = database().C("plots")
 
-	indexOnce.Do(func () {
+	indexOnce.Do(func() {
 		err := collection.EnsureIndexKey("Uid")
 		if err != nil {
-			panic(err);
+			panic(err)
 		}
-	});
+	})
 
-	return;
+	return
 }
 
 func Setup(url string) {
@@ -37,13 +37,13 @@ func Setup(url string) {
 }
 
 func SavePlot(plot *models.Plot) error {
-	_, err := plotCollection().Upsert(bson.M{"uid": plot.Uid}, plot);
-	return err;
+	_, err := plotCollection().Upsert(bson.M{"uid": plot.Uid}, plot)
+	return err
 }
 
 func LoadPlot(uid string) (*models.Plot, error) {
 	plot := new(models.Plot)
-	err := plotCollection().Find(bson.M{"uid": uid}).One(plot);
+	err := plotCollection().Find(bson.M{"uid": uid}).One(plot)
 
 	if err != nil {
 		return nil, err

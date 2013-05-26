@@ -2,13 +2,13 @@ package models
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/sha256"
 	"fmt"
 	"hash"
 	"io"
 	"strconv"
 	"strings"
-	"bytes"
 	"time"
 	"unicode/utf8"
 )
@@ -70,7 +70,7 @@ func (plot *Plot) Values() []float64 {
 	for {
 		line, err := reader.ReadString('\n')
 		if err == io.EOF {
-			return data;
+			return data
 		}
 		value, err := parseFloat(line)
 		if err == nil {

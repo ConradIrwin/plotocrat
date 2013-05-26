@@ -37,7 +37,7 @@ func (viz *Visualization) WriteTo(w io.Writer) error {
 	svg := svgo.New(w)
 	svg.Start(viz.width, viz.height)
 
-	svg.Path(viz.cumulativeProbabilityData(), "fill:none; stroke:red")
+	svg.Path(viz.cumulativeProbabilityData(), "fill: none; stroke: red")
 
 	svg.End()
 	return nil

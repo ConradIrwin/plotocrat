@@ -1,16 +1,16 @@
 package http
 
 import (
-	"github.com/ConradIrwin/plotocrat/models"
-	"github.com/ConradIrwin/plotocrat/db"
-	"github.com/gorilla/mux"
-	"fmt"
 	"encoding/json"
+	"fmt"
+	"github.com/ConradIrwin/plotocrat/db"
+	"github.com/ConradIrwin/plotocrat/models"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
 func router() *mux.Router {
-	r := mux.NewRouter();
+	r := mux.NewRouter()
 
 	r.HandleFunc("/", upload).Methods("POST")
 	r.HandleFunc("/", index).Methods("GET")
@@ -19,7 +19,7 @@ func router() *mux.Router {
 	r.HandleFunc("/{uid:[a-f0-9]{20}}.json", download(asJson)).Methods("GET").Name("json")
 	r.HandleFunc("/{uid:[a-f0-9]{20}}.svg", download(asSvg)).Methods("GET").Name("svg")
 
-	return r;
+	return r
 }
 
 func Listen(port string) {
@@ -38,7 +38,7 @@ func index(res http.ResponseWriter, req *http.Request) {
 
 func upload(res http.ResponseWriter, req *http.Request) {
 	// Limit the size of uploaded files: https://code.google.com/p/go/issues/detail?id=2093
-	req.Body = http.MaxBytesReader(res, req.Body, 10 * 1024 * 1024)
+	req.Body = http.MaxBytesReader(res, req.Body, 10*1024*1024)
 
 	err := req.ParseMultipartForm(10 * 1024 * 1024)
 
@@ -78,14 +78,14 @@ func upload(res http.ResponseWriter, req *http.Request) {
 				panic(err)
 			}
 
-			http.Redirect(res, req, url.String(), http.StatusMovedPermanently);
-			fmt.Fprintln(res, "http://" + req.Host + url.String());
+			http.Redirect(res, req, url.String(), http.StatusMovedPermanently)
+			fmt.Fprintln(res, "http://"+req.Host+url.String())
 		}
 	}
 }
 
-func download(handler func(*models.Plot, http.ResponseWriter)) func (http.ResponseWriter, *http.Request) {
-	return (func (res http.ResponseWriter, req *http.Request) {
+func download(handler func(*models.Plot, http.ResponseWriter)) func(http.ResponseWriter, *http.Request) {
+	return (func(res http.ResponseWriter, req *http.Request) {
 		plot, err := db.LoadPlot(mux.Vars(req)["uid"])
 
 		if err != nil {
@@ -94,22 +94,22 @@ func download(handler func(*models.Plot, http.ResponseWriter)) func (http.Respon
 			return
 		}
 
-		handler(plot, res);
-	});
+		handler(plot, res)
+	})
 }
 
 func asTxt(plot *models.Plot, res http.ResponseWriter) {
-	res.Header().Set("Content-Type", "text/plain; charset=utf-8");
-	fmt.Fprint(res, plot.Data);
+	res.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	fmt.Fprint(res, plot.Data)
 }
 
 func asJson(plot *models.Plot, res http.ResponseWriter) {
-	res.Header().Set("Content-Type", "application/json");
+	res.Header().Set("Content-Type", "application/json")
 	enc := json.NewEncoder(res)
 
 	err := enc.Encode(plot.Values())
 	if err != nil {
-		panic(err);
+		panic(err)
 	}
 }
 
@@ -120,8 +120,8 @@ func asSvg(plot *models.Plot, res http.ResponseWriter) {
 }
 
 func asTsv(plot *models.Plot, res http.ResponseWriter) {
-	res.Header().Set("Content-Type", "text/plain; charset=utf-8");
+	res.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	for _, value := range plot.Values() {
-		fmt.Fprintln(res, value);
+		fmt.Fprintln(res, value)
 	}
 }
