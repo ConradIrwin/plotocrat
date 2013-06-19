@@ -4,7 +4,7 @@
     chart = (datasets) ->
       kdes = datasets.map (data) -> science.stats.distribution.kde().sample(data).resolution(200)
 
-      feelsLogarithmic = kdes.some((kde) -> kde.feelsLogarithmic)
+      feelsLogarithmic = kdes.some((kde) -> kde.feelsLogarithmic())
 
       if feelsLogarithmic
       # remove all 0s as they play merry havoc with log scales.
@@ -21,7 +21,7 @@
       max = d3.max(datasets.map (data) -> d3.max(data))
       min = d3.min(datasets.map (data) -> d3.min(data))
 
-      x.clamp(true).domain([min, max]).range([40, width]).nice()
+      x.clamp(true).domain([min * 0.9, max * 1.1]).range([40, width]).nice()
 
       y = d3.scale.linear().domain([1, 0]).range([40, height])
 
