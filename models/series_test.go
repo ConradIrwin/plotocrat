@@ -1,15 +1,15 @@
 package models
 
-import "testing"
+import (
+	"testing"
+	"github.com/stretchr/testify/assert"
+)
 
 func TestRange(t *testing.T) {
-
 	s := Series{1, 2, 3, 4}
 	p := pair{1, 4}
 
-	if s.Range() != p {
-		t.Error("Range was wrong")
-	}
+	assert.Equal(t, p, s.Range())
 }
 
 func TestQuantile(t *testing.T) {
@@ -23,24 +23,18 @@ func TestQuantile(t *testing.T) {
 	}
 
 	for position, quantile := range q {
-		if s.Quantile(position) != quantile {
-			t.Errorf("s.Quantile(%v): %v != %v", position, s.Quantile(position), quantile)
-		}
+		assert.Equal(t, quantile, s.Quantile(position))
 	}
 }
 
 func TestVariance(t *testing.T) {
 	s := Series{1, 2, 3, 4, 5, 6, 7, 8, 9}
 
-	if s.Variance() != 7.5 {
-		t.Errorf("s.Variance(): %v != 7.5", s.Variance())
-	}
+	assert.Equal(t, 7.5, s.Variance())
 }
 
 func TestBandwidth(t *testing.T) {
 	s := Series{1, 2, 3, 4, 5, 6, 7, 8, 9}
 
-	if s.KernelBandwidth() != 1.8706304309991295 {
-		t.Error("Bandwidth was wrong")
-	}
+	assert.Equal(t, 1.8706304309991295, s.KernelBandwidth())
 }
