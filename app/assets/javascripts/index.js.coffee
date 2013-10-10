@@ -83,6 +83,19 @@
           x: 40 + width / 2
           y: height + 60
 
+      kdes.forEach (kde, i) ->
+        stats = $("<table style='margin: auto; font-family: sans-serif; font-size: smaller'><tr><td class='qf'></td><td class='avg'></td></tr></table>").appendTo($("#cdf").parent())
+        table = $("<table>").appendTo(stats.find(".qf"))
+        kde.qf().forEach ([value, percentile]) ->
+          $("<tr><td>#{percentile * 100}%</td><td>#{value.toPrecision(4)}</td></tr>").appendTo(table)
+
+        table = $("<table>").appendTo(stats.find(".avg"))
+        $("<tr><td>Sample size</td><td>#{kde.size()}</td></tr>").appendTo(table)
+        $("<tr><td><a href='http://en.wikipedia.org/wiki/Expected_value'>Expectation</a></td><td>#{kde.expectation().toPrecision(4)}</td></tr>").appendTo(table)
+        $("<tr><td><a href='http://en.wikipedia.org/wiki/Arithmetic_mean'>Arithemtic mean</a></td><td>#{kde.mean().toPrecision(4)}</td></tr>").appendTo(table)
+        $("<tr><td>Median</td><td>#{kde.median().toPrecision(4)}</td></tr>").appendTo(table)
+        $("<tr><td>Mode</td><td>#{kde.mode().toPrecision(4)}</td></tr>").appendTo(table)
+
       viz.onHorizontalInteraction (value) ->
         if value == false
           viz.selectAll(".fugi").style display: 'none'
@@ -103,7 +116,9 @@
         value_s = value_s.replace(/\((.*)\) *= ([0-9e\-\+\.]*)$/, (m, u, v) -> "= " + v + " " + u)
         label.html(value_s)
 
+
         kdes.forEach (kde, i) ->
+          window.top.kde = kde
           cumulative = kde.inverseQuantile(value)
           density = kde(value)
           cd = [yk(density), y(cumulative)]

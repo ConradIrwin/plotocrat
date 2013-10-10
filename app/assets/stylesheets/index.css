@@ -145,6 +145,11 @@ iframe.index {
 
 }
 
+tr:nth-child(even) {
+    background: #EEE;
+}
+
+
 /* Palette color codes */
 /* Feel free to copy&paste color codes to your application */
 

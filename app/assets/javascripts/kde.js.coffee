@@ -138,12 +138,21 @@ science.stats.distribution.kde = ->
 
     scale.invert accum
 
+  kde.mean = ->
+    science.stats.mean(sample)
+
+  kde.variance = ->
+    science.stats.variance(sample)
+
+  kde.size = ->
+    sample.length
+
   # The 'median' of the data.
   #
   # Half the data is smaller than the median, the other half is bigger.
   # (e.g. half of all files are smaller than 16kb)
   kde.median = ->
-    kde.percentile 0.5
+    kde.quantile 0.5
 
   kde.max = ->
     kde kde.mode()
