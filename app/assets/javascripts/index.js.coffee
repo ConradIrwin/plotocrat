@@ -142,6 +142,7 @@
 
       data.sort(d3.ascending)
       $('textarea#data' + i).val(data.join("\n"))
+      data
 
     chart datasets
 
