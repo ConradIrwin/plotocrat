@@ -5,6 +5,8 @@
       kdes = datasets.map (data) -> science.stats.distribution.kde().sample(data).resolution(200)
 
       feelsLogarithmic = kdes.some((kde) -> kde.feelsLogarithmic)
+      feelsLogarithmic = false if window.location.hash.match(/linear/)
+      feelsLogarithmic = true if window.location.hash.match(/loggy/)
 
       if feelsLogarithmic
       # remove all 0s as they play merry havoc with log scales.
@@ -139,6 +141,7 @@
       )
 
       data.sort(d3.ascending)
+      $('textarea#data' + i).val(data.join("\n"))
 
     chart datasets
 
