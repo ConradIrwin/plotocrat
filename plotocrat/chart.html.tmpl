@@ -1,0 +1,25 @@
+<!doctype html>
+<meta charset="utf-8">
+
+<style>
+    {{.CSS}}
+</style>
+
+<script type="text/javascript">
+    {{.JS}}
+</script>
+
+<nav></nav>
+
+<article>
+  <h1>Distribution of {{.Chart.XAxis}}</h1>
+
+  <section>
+    <div data-title="{{.Chart.XAxis}}" id="cdf"></div>
+  </section>
+
+  <section>
+    <textarea id="data">{{.Chart.Data}}</textarea>
+  </section>
+
+</article>
