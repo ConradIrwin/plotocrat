@@ -35,7 +35,6 @@ func wrapHandler(f http.HandlerFunc) http.Handler {
 
 				w.Write([]byte("internal-server-error:" + str))
 			}
-
 		}()
 
 		f(w, r)
